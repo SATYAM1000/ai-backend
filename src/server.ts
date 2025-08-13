@@ -1,0 +1,1 @@
+import { envConfig } from "./config";
