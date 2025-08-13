@@ -37,11 +37,20 @@ const consoleLogFormat = format.printf((info) => {
   const customTimestamp = green(timestamp);
   const customMessage = message;
 
-  const customMeta = util.inspect(meta, {
-    showHidden: false,
-    depth: null,
-    colors: true,
-  });
+  let customMeta;
+
+  const keys = Object.keys(meta);
+  if (keys.length > 0) {
+    customMeta = util.inspect(meta, {
+      showHidden: false,
+      depth: null,
+      colors: true,
+    });
+  }
+
+  if (customMeta === undefined) {
+    return `${customLevel} [${customTimestamp}] ${customMessage}\n`;
+  }
 
   return `${customLevel} [${customTimestamp}] ${customMessage}\n${magenta('META')} ${customMeta}\n`;
 });
