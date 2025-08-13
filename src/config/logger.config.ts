@@ -106,7 +106,7 @@ const dailyRotateFileTransport = () => [
     datePattern: 'YYYY-MM-DD',
     level: 'info',
     format: format.combine(format.timestamp(), fileLogFormat),
-    maxFiles: '4d',
+    maxFiles: '2d',
   }),
 ];
 
@@ -115,7 +115,7 @@ const mongodbTransport = () => [
     level: 'info',
     db: env.MONGO_URI_LOGS,
     metaKey: 'meta',
-    expireAfterSeconds: 3600 * 24 * 30, // 30 days
+    expireAfterSeconds: 3600 * 24 * 15, // 15 days
     options: {
       useUnifiedTopology: true,
     },
