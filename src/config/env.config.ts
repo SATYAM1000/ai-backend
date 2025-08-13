@@ -7,8 +7,6 @@ const envPath = path.resolve(process.cwd(), envFile);
 
 dotenv.config({ path: envPath });
 
-// parse and validate env variables
-
 const _env = validationSchema.env.safeParse(process.env);
 
 if (!_env.success) {

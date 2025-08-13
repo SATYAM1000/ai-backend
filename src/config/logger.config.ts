@@ -110,12 +110,10 @@ const dailyRotateFileTransport = () => [
   }),
 ];
 
-// MongoDB logging transport (optional)
-
 const mongodbTransport = () => [
   new transports.MongoDB({
     level: 'info',
-    db: process.env.DATABASE_URL!,
+    db: env.MONGO_URI_LOGS,
     metaKey: 'meta',
     expireAfterSeconds: 3600 * 24 * 30, // 30 days
     options: {
@@ -125,7 +123,6 @@ const mongodbTransport = () => [
   }),
 ];
 
-// Create logger
 export const logger: Logger = createLogger({
   defaultMeta: { meta: {} },
   transports: [...dailyRotateFileTransport(), ...consoleTransport(), ...mongodbTransport()],

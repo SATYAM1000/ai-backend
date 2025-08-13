@@ -6,6 +6,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(middlewares.request);
 
-app.use(); // error handler middleware
+// TODO: Add error handler middleware here
+// app.use(errorMiddleware);
 
 export default app;
