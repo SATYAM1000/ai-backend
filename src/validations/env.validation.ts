@@ -5,4 +5,6 @@ export const envSchema = z.object({
   PORT: z.string(),
   MONGO_URI_MAIN: z.string().min(1, 'MONGO_URI_MAIN is required in env file'),
   MONGO_URI_LOGS: z.string().min(1, 'MONGO_URI_LOGS is required in env file'),
+  NEXTAUTH_SECRET: z.string().min(1, 'NEXTAUTH_SECRET is required in env file'),
+  NEXTAUTH_SALT: z.string().min(1, 'NEXTAUTH_SALT is required in env file'),
 });
