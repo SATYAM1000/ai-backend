@@ -1,11 +1,14 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { middlewares } from '@/middlewares';
 import userRouter from '@/routes/auth.route';
 import { env } from '@/config';
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(

@@ -24,18 +24,10 @@ export const authMiddleware = async (
     httpError(next, new Error(message), req, 401);
 
   try {
-    const authHeader = req.header('Authorization');
-    if (!authHeader || authHeader.length < 8 || !authHeader.startsWith('Bearer ')) {
-      return unauthorized();
-    }
-
-    const token = authHeader.split(' ', 2)[1];
+    const token =
+      req.cookies['authjs.session-token'] || req.cookies['__Secure-authjs.session-token'];
 
     if (!token) return unauthorized();
-
-    if (!env.NEXTAUTH_SECRET || !env.NEXTAUTH_SALT) {
-      return unauthorized();
-    }
 
     const decoded = (await decode({
       token,
