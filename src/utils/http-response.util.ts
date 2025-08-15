@@ -22,7 +22,7 @@ export const httpResponse = (
     data: data,
   };
 
-  utils.logger('info', `CONTROLLER RESPONSE: ${JSON.stringify(response)}`);
+  utils.logger('info', `✅ CONTROLLER RESPONSE: ${JSON.stringify(response)}`);
 
   if (env.NODE_ENV === 'production') {
     delete response.request.ip;
