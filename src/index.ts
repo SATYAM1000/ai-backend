@@ -7,8 +7,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(middlewares.request);
 
-// TODO: Add error handler middleware here
-// app.use(errorMiddleware);
-
 app.use('/api/v1/auth', userRouter);
+app.use(middlewares.error);
+
 export default app;
