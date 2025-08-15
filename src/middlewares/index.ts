@@ -1,9 +1,11 @@
 import { requestLoggerMiddleware } from '@/middlewares/request.middleware';
 import { globalErrorMiddleware } from '@/middlewares/global-error.middleware';
 import { authMiddleware } from '@/middlewares/auth.middleware';
+import { routeNotFoundMiddleware } from '@/middlewares/not-found.middleware';
 
 export const middlewares = {
-  request: requestLoggerMiddleware,
-  auth: authMiddleware,
-  error: globalErrorMiddleware,
+  requestHandler: requestLoggerMiddleware,
+  authHandler: authMiddleware,
+  errorHandler: globalErrorMiddleware,
+  notFoundHandler: routeNotFoundMiddleware,
 };
