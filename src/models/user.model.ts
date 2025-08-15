@@ -1,4 +1,5 @@
-import { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { email } from 'zod';
 
 enum ERole {
   user = 'user',
@@ -14,17 +15,17 @@ export interface IUser extends Document {
   role: ERole;
   isVerified: boolean;
   lastLoginAt: Date;
+  timezone: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const userSchema = new Schema<IUser>(
+const userSchema = new mongoose.Schema<IUser>(
   {
     googleId: {
       type: String,
       required: true,
       unique: true,
-      index: true,
     },
     name: {
       type: String,
@@ -58,6 +59,10 @@ const userSchema = new Schema<IUser>(
       type: Date,
       default: Date.now,
     },
+    timezone: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -65,7 +70,9 @@ const userSchema = new Schema<IUser>(
     collection: 'users',
   },
 );
+
 userSchema.index({ email: 1 });
 userSchema.index({ googleId: 1 });
+userSchema.index({ email: 1, googleId: 1 });
 
-export const User = models.User || model<IUser>('User', userSchema);
+export const User = mongoose.model<IUser>('user', userSchema);
