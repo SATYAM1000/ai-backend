@@ -4,6 +4,6 @@ import { middlewares } from '@/middlewares';
 
 const userRouter = Router();
 
-userRouter.get('/me', middlewares.auth, authControllers.getUseInfo);
+userRouter.get('/me', middlewares.authHandler, authControllers.getUseInfo);
 
 export default userRouter;
