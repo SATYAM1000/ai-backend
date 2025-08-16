@@ -1,5 +1,4 @@
 import mongoose, { Document } from 'mongoose';
-import { email } from 'zod';
 
 enum ERole {
   user = 'user',
@@ -15,7 +14,6 @@ export interface IUser extends Document {
   role: ERole;
   isVerified: boolean;
   lastLoginAt: Date;
-  timezone: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,6 +39,7 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     avatarUrl: {
       type: String,
+      trim: true,
     },
     isBlocked: {
       type: Boolean,
@@ -58,10 +57,6 @@ const userSchema = new mongoose.Schema<IUser>(
     lastLoginAt: {
       type: Date,
       default: Date.now,
-    },
-    timezone: {
-      type: String,
-      required: true,
     },
   },
   {
