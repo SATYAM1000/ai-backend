@@ -38,6 +38,7 @@ export interface IProjectSchema extends Document {
   updatedAt: Date;
 }
 
+
 const projectSchema = new mongoose.Schema<IProjectSchema>(
   {
     workspaceId: {
