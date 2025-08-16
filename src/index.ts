@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { middlewares } from '@/middlewares';
 import userRouter from '@/routes/auth.route';
 import { env } from '@/config';
+import { workspaceRouter } from './routes/workspace.route';
 
 const app = express();
 app.use(express.json());
@@ -22,6 +23,7 @@ app.use(
 app.use(middlewares.requestHandler);
 
 app.use('/api/v1/auth', userRouter);
+app.use('/api/v1/workspaces', workspaceRouter);
 
 app.use(middlewares.notFoundHandler);
 

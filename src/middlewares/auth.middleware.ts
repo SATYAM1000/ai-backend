@@ -18,6 +18,7 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
   try {
     const token =
       req.cookies['authjs.session-token'] || req.cookies['__Secure-authjs.session-token'];
+    console.log('token', token);
 
     if (!token) return unauthorized();
 

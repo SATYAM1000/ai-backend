@@ -1,6 +1,7 @@
 import { WorkspaceModel } from '@/models/workspace.model';
 import mongoose from 'mongoose';
 import { projectServices } from './project.service';
+import { EProjectStatus, ProjectModel } from '@/models';
 
 export const workspaceServices = {
   createDefaultWorkspace: async (
@@ -29,5 +30,24 @@ export const workspaceServices = {
     workspace.projects.push(defaultProject[0]!._id as mongoose.Types.ObjectId);
 
     return await workspace.save({ session });
+  },
+  getLastEditedProjectFromWorkspace: async (
+    workspaceId: mongoose.Types.ObjectId,
+    userId: mongoose.Types.ObjectId,
+  ) => {
+    const project = await ProjectModel.findOne({
+      workspaceId,
+      status: EProjectStatus.ACTIVE,
+      createdBy: userId,
+    })
+      .sort({ updatedAt: -1, createdAt: -1 })
+      .select('name description thumbnailUrl')
+      .exec();
+
+    if (!project) {
+      throw new Error('No projects found in this workspace');
+    }
+
+    return project;
   },
 };
