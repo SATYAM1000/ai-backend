@@ -42,3 +42,87 @@ export interface IWorkspaceSchema extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const workspaceSchema = new mongoose.Schema<IWorkspaceSchema>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    logo: {
+      type: String,
+      trim: true,
+    },
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    projects: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'Project',
+      },
+    ],
+    members: [
+      {
+        userId: {
+          type: mongoose.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        role: {
+          type: String,
+          enum: Object.values(IWorkspaceMemberRole),
+          default: IWorkspaceMemberRole.VIEWER,
+        },
+        joinedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    settings: {
+      designSystemId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'DesignSystem',
+      },
+      globalMemoryId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'GlobalMemory',
+      },
+      billingPlan: {
+        type: String,
+        enum: Object.values(IBillingPlanType),
+        default: IBillingPlanType.FREE,
+      },
+      apiKeys: [
+        {
+          name: {
+            type: String,
+            required: true,
+          },
+          apiKey: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
+    },
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+export const WorkspaceModel = mongoose.model<IWorkspaceSchema>('Workspace', workspaceSchema);

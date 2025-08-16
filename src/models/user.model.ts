@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     defaultWorkspaceId: {
       type: Schema.Types.ObjectId,
-      required: true,
+      ref: 'Workspace',
     },
     workspaces: [{ type: Schema.Types.ObjectId, ref: 'Workspace' }],
     lastLoginAt: {
@@ -77,4 +77,4 @@ userSchema.index({ email: 1 });
 userSchema.index({ googleId: 1 });
 userSchema.index({ email: 1, googleId: 1 });
 
-export const User = mongoose.model<IUser>('user', userSchema);
+export const UserModel = mongoose.model<IUser>('user', userSchema);

@@ -1,4 +1,4 @@
-import { User } from '@/models/user.model';
+import { UserModel } from '@/models';
 import { validationSchema } from '@/validations';
 import { z } from 'zod';
 
@@ -8,7 +8,7 @@ export const authService = {
   upsertGoogleUser: async (payload: UpsertGoogleUserBody) => {
     const email = payload.email.trim().toLowerCase();
 
-    const updatedUser = await User.findOneAndUpdate(
+    const updatedUser = await UserModel.findOneAndUpdate(
       { googleId: payload.providerAccountId },
       {
         $setOnInsert: {
@@ -37,7 +37,7 @@ export const authService = {
   },
 
   getUserInfoById: async (id: string) => {
-    const user = await User.findById(id);
+    const user = await UserModel.findById(id);
     return user ? user : null;
   },
 };
