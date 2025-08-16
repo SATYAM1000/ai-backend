@@ -1,8 +1,8 @@
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export enum IWorkspaceMemberRole {
   OWNER = 'owner',
-  MEMBER = 'admin',
+  ADMIN = 'admin',
   EDITOR = 'editor',
   VIEWER = 'viewer',
   GUEST = 'guest',
@@ -20,23 +20,25 @@ export interface AIProviderApiKey {
 }
 
 export interface IWorkspaceMember {
-  userId: string;
+  userId: mongoose.Types.ObjectId;
   role: IWorkspaceMemberRole;
   joinedAt: Date;
 }
 
 export interface IWorkspaceSchema extends Document {
   name: string;
-  description: string;
-  workspaceLogoUrl: string;
-  ownerId: string;
+  description?: string;
+  logo?: string;
+  ownerId: mongoose.Types.ObjectId;
+  projects: mongoose.Types.ObjectId[];
   members: IWorkspaceMember[];
   settings: {
-    designSystemId: string;
-    globalMempryId: string;
+    designSystemId?: mongoose.Types.ObjectId;
+    globalMemoryId?: mongoose.Types.ObjectId;
     billingPlan: IBillingPlanType;
     apiKeys: AIProviderApiKey[];
   };
+  isDefault: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

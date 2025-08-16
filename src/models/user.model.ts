@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 enum ERole {
   user = 'user',
@@ -13,6 +13,8 @@ export interface IUser extends Document {
   isBlocked: boolean;
   role: ERole;
   isVerified: boolean;
+  defaultWorkspaceId: mongoose.Types.ObjectId;
+  workspaces: mongoose.Types.ObjectId[];
   lastLoginAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -54,6 +56,11 @@ const userSchema = new mongoose.Schema<IUser>(
       type: Boolean,
       default: true,
     },
+    defaultWorkspaceId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
+    workspaces: [{ type: Schema.Types.ObjectId, ref: 'Workspace' }],
     lastLoginAt: {
       type: Date,
       default: Date.now,
