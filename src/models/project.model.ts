@@ -91,7 +91,7 @@ const projectSchema = new mongoose.Schema<IProjectSchema>(
       default: EProjectStatus.ACTIVE,
     },
     visibility: {
-      ttype: String,
+      type: String,
       enum: Object.values(EProjectVisibility),
       default: EProjectVisibility.PRIVATE,
     },
@@ -111,6 +111,7 @@ const projectSchema = new mongoose.Schema<IProjectSchema>(
 
 projectSchema.index({ workspaceId: 1, updatedAt: -1 });
 projectSchema.index({ workspaceId: 1, status: 1, visibility: 1, updatedAt: -1 });
+projectSchema.index({ status: 1 });
 projectSchema.index({ 'collaborators.userId': 1 });
 projectSchema.index({ createdBy: 1 });
 projectSchema.index(

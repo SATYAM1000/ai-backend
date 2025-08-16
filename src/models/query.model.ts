@@ -52,6 +52,13 @@ const querySchema = new mongoose.Schema<IQuery>(
     parentQueryId: { type: Schema.Types.ObjectId, ref: 'Query' },
     attachments: [{ type: Schema.Types.ObjectId, ref: 'Attachment' }],
     artifactReferenceIds: [{ type: Schema.Types.ObjectId, ref: 'Artifact' }],
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    summary: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -63,6 +70,10 @@ querySchema.index({ projectId: 1, createdAt: -1 });
 querySchema.index({ status: 1, createdAt: 1 });
 querySchema.index({ userId: 1, projectId: 1, createdAt: -1 });
 querySchema.index({ parentQueryId: 1 });
+querySchema.index(
+  { projectId: 1, isDeleted: 1, createdAt: -1 },
+  { partialFilterExpression: { isDeleted: false } }
+);
 querySchema.index({ query: 'text', response: 'text' }, { weights: { query: 3, response: 1 } });
 
 export const QueryModel = mongoose.model<IQuery>('Query', querySchema);

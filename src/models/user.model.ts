@@ -78,4 +78,4 @@ userSchema.index({ googleId: 1 });
 userSchema.index({ email: 1, googleId: 1 });
 userSchema.index({ workspaces: 1 });
 
-export const UserModel = mongoose.model<IUser>('user', userSchema);
+export const UserModel = mongoose.model<IUser>('User', userSchema);
