@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 type UpsertGoogleUserBody = z.infer<typeof validationSchema.auth.upsertGoogleUserSchema>;
 
-export const userService = {
+export const authService = {
   upsertGoogleUser: async (payload: UpsertGoogleUserBody) => {
     const email = payload.email.trim().toLowerCase();
 

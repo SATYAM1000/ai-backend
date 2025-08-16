@@ -22,3 +22,16 @@ export type THttpError = {
   data: unknown;
   trace?: object | null;
 };
+
+export interface IAuthenticatedRequest {
+  _id: string;
+  email: string;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: IAuthenticatedRequest;
+    }
+  }
+}

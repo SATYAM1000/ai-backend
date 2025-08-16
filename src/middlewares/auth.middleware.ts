@@ -2,24 +2,16 @@ import { Request, Response, NextFunction } from 'express';
 import { decode } from 'next-auth/jwt';
 import mongoose from 'mongoose';
 import { env } from '@/config';
-import { userService } from '@/services';
+import { authService } from '@/services';
 import { utils } from '@/utils';
 import { httpError } from '@/utils/http-error.util';
-
-interface IAuthenticatedRequest extends Request {
-  user?: { id: string; email: string };
-}
 
 interface IJWTSession {
   sub: string;
   email?: string;
 }
 
-export const authMiddleware = async (
-  req: IAuthenticatedRequest,
-  _res: Response,
-  next: NextFunction,
-) => {
+export const authMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
   const unauthorized = (message = 'Unauthorized access') =>
     httpError(next, new Error(message), req, 401);
 
@@ -37,10 +29,10 @@ export const authMiddleware = async (
 
     if (!decoded?.sub || !mongoose.isValidObjectId(decoded.sub)) return unauthorized();
 
-    const user = await userService.getUserInfoById(decoded.sub);
+    const user = await authService.getUserInfoById(decoded.sub);
     if (!user) return unauthorized();
 
-    req.user = { id: String(user._id), email: user.email };
+    req.user = { _id: String(user._id), email: user.email };
     return next();
   } catch (error) {
     return utils.httpError(next, error, req);

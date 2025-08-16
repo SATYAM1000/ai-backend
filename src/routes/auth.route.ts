@@ -10,6 +10,8 @@ userRouter.post(
   middlewares.validationHandler(validationSchema.auth.upsertGoogleUserSchema),
   authControllers.upsertGoogleUser,
 );
-userRouter.get('/me', middlewares.authHandler, authControllers.getUseInfo);
+userRouter.get('/me', middlewares.authHandler, authControllers.getUseInfo
+  
+);
 
 export default userRouter;
