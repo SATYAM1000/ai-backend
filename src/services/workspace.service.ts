@@ -3,10 +3,13 @@ import mongoose from 'mongoose';
 import { projectServices } from './project.service';
 
 export const workspaceServices = {
-  createDefaultWorkspace: async (id: mongoose.Types.ObjectId) => {
+  createDefaultWorkspace: async (
+    userId: mongoose.Types.ObjectId,
+    session?: mongoose.ClientSession,
+  ) => {
     const workspace = new WorkspaceModel({
       name: 'My Workspace',
-      ownerId: id,
+      ownerId: userId,
       projects: [],
       members: [],
       settings: {
@@ -16,13 +19,15 @@ export const workspaceServices = {
       isDefault: true,
     });
 
-    // create default project also
+    // create default project inside same session
     const defaultProject = await projectServices.createDefaultProject(
       workspace._id as mongoose.Types.ObjectId,
-      id as mongoose.Types.ObjectId,
+      userId,
+      session,
     );
-    workspace.projects.push(defaultProject._id as mongoose.Types.ObjectId);
 
-    return await workspace.save();
+    workspace.projects.push(defaultProject[0]!._id as mongoose.Types.ObjectId);
+
+    return await workspace.save({ session });
   },
 };

@@ -8,52 +8,65 @@ type UpsertGoogleUserBody = z.infer<typeof validationSchema.auth.upsertGoogleUse
 
 export const authService = {
   upsertGoogleUser: async (payload: UpsertGoogleUserBody) => {
-    const email = payload.email.trim().toLowerCase();
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    const updatedUser = await UserModel.findOneAndUpdate(
-      { googleId: payload.providerAccountId },
-      {
-        $setOnInsert: {
-          name: payload.name.trim(),
-          email,
-          role: payload.role,
-          isVerified: true,
-          googleId: payload.providerAccountId,
+    try {
+      const email = payload.email.trim().toLowerCase();
+
+      let user = await UserModel.findOneAndUpdate(
+        { googleId: payload.providerAccountId },
+        {
+          $setOnInsert: {
+            name: payload.name.trim(),
+            email,
+            role: payload.role,
+            isVerified: true,
+            googleId: payload.providerAccountId,
+          },
+          $set: {
+            lastLoginAt: new Date(),
+            avatarUrl: payload.image || undefined,
+          },
         },
-        $set: {
-          lastLoginAt: new Date(),
-          avatarUrl: payload.image || undefined,
+        {
+          new: true,
+          upsert: true,
+          session,
         },
-      },
-      {
-        new: true,
-        upsert: true,
-      },
-    );
+      );
 
-    if (!updatedUser) {
-      return new Error('Failed to create or update user');
+      if (!user) throw new Error('Failed to create or update user');
+      if (user.isBlocked) throw new Error('User is blocked');
+
+      const defaultWorkspace = await workspaceServices.createDefaultWorkspace(
+        user._id as mongoose.Types.ObjectId,
+        session,
+      );
+
+      if (!defaultWorkspace) throw new Error('Failed to create default workspace');
+
+      user.defaultWorkspaceId = defaultWorkspace._id as mongoose.Types.ObjectId;
+      user.workspaces = [defaultWorkspace._id as mongoose.Types.ObjectId];
+
+      await user.save({ session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatarUrl: user.avatarUrl,
+        defaultWorkspaceId: user.defaultWorkspaceId,
+      };
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
     }
-
-    if (updatedUser.isBlocked) {
-      return new Error('User is blocked');
-    }
-
-    // create default workspace
-    const defaultWorkspace = await workspaceServices.createDefaultWorkspace(
-      updatedUser._id as mongoose.Types.ObjectId,
-    );
-
-    if (!defaultWorkspace) {
-      return new Error('Failed to create default workspace');
-    }
-
-    updatedUser.defaultWorkspaceId = defaultWorkspace._id as mongoose.Types.ObjectId;
-    updatedUser.workspaces = [defaultWorkspace._id as mongoose.Types.ObjectId];
-
-    await updatedUser.save();
-
-    return updatedUser;
   },
 
   getUserInfoById: async (id: string) => {

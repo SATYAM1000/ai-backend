@@ -2,7 +2,11 @@ import { EProjectStatus, EProjectVisibility, ProjectModel } from '@/models';
 import mongoose from 'mongoose';
 
 export const projectServices = {
-  createDefaultProject: async (workspaceId: mongoose.Types.ObjectId, userId: mongoose.Types.ObjectId) => {
+  createDefaultProject: async (
+    workspaceId: mongoose.Types.ObjectId,
+    userId: mongoose.Types.ObjectId,
+    session?: mongoose.ClientSession,
+  ) => {
     const defaultProjectPayload = {
       workspaceId: workspaceId,
       name: 'My Project',
@@ -19,6 +23,6 @@ export const projectServices = {
       queryIds: [],
     };
 
-    return await ProjectModel.create(defaultProjectPayload);
+    return await ProjectModel.create([defaultProjectPayload], { session });
   },
 };
