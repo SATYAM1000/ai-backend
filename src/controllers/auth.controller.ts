@@ -11,12 +11,19 @@ export const authControllers = {
     const result = await authService.upsertGoogleUser(body);
     return utils.httpResponse(req, res, 200, 'success', result);
   }),
-  getUseInfo: utils.asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user;
-    if (!user?._id) {
-      return utils.httpError(next, new Error('Unauthorized access'), req, 401);
+  getUserInfo: utils.asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id as string | undefined;
+
+    if (!userId) {
+      return utils.httpError(next, new Error('User ID is required'), req, 400);
     }
-    const userDetails = await authService.getUserInfoById(user._id);
-    return utils.httpResponse(req, res, 200, 'success', userDetails);
+
+    const user = await authService.getUserInfoById(userId);
+
+    if (!user) {
+      return utils.httpError(next, new Error('User not found'), req, 404);
+    }
+
+    return utils.httpResponse(req, res, 200, 'User fetched successfully', user);
   }),
 };
