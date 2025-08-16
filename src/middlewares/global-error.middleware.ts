@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { THttpError } from '@/@types';
+import { utils } from '@/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const globalErrorMiddleware = (
@@ -8,5 +9,6 @@ export const globalErrorMiddleware = (
   res: Response,
   __: NextFunction,
 ) => {
+  utils.logger('error', `❌ CONTROLLER_ERROR: ${JSON.stringify(err)}`);
   res.status(err.statusCode).json(err);
 };

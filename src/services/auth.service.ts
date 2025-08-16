@@ -55,7 +55,7 @@ export const authService = {
       session.endSession();
 
       return {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -70,7 +70,9 @@ export const authService = {
   },
 
   getUserInfoById: async (id: string) => {
-    const user = await UserModel.findById(id);
+    const user = await UserModel.findById(id).select(
+      '-workspaces -googleId -isBlocked -lastLoginAt ',
+    );
     return user ? user : null;
   },
 };
