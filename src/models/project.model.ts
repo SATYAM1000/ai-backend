@@ -109,4 +109,13 @@ const projectSchema = new mongoose.Schema<IProjectSchema>(
   },
 );
 
+projectSchema.index({ workspaceId: 1, updatedAt: -1 });
+projectSchema.index({ workspaceId: 1, status: 1, visibility: 1, updatedAt: -1 });
+projectSchema.index({ 'collaborators.userId': 1 });
+projectSchema.index({ createdBy: 1 });
+projectSchema.index(
+  { name: 'text', description: 'text' },
+  { weights: { name: 5, description: 1 } },
+);
+
 export const ProjectModel = mongoose.model<IProjectSchema>('Project', projectSchema);

@@ -125,4 +125,11 @@ const workspaceSchema = new mongoose.Schema<IWorkspaceSchema>(
   },
 );
 
+workspaceSchema.index({ ownerId: 1 });
+workspaceSchema.index({ 'members.userId': 1 });
+workspaceSchema.index(
+  { name: 'text', description: 'text' },
+  { weights: { name: 5, description: 1 } },
+);
+
 export const WorkspaceModel = mongoose.model<IWorkspaceSchema>('Workspace', workspaceSchema);
