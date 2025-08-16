@@ -27,7 +27,7 @@ export const userService = {
         new: true,
         upsert: true,
       },
-    );
+    ).select('_id name email avatarUrl role createdAt updatedAt');
 
     if (updatedUser.isBlocked) {
       return new Error('User is blocked');
