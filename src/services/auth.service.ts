@@ -6,12 +6,22 @@ import mongoose from 'mongoose';
 
 type UpsertGoogleUserBody = z.infer<typeof validationSchema.auth.upsertGoogleUserSchema>;
 
+type UserResponse = {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl?: string;
+  defaultWorkspaceId: mongoose.Types.ObjectId;
+};
+
 export const authService = {
-  upsertGoogleUser: async (payload: UpsertGoogleUserBody) => {
+  upsertGoogleUser: async (payload: UpsertGoogleUserBody): Promise<UserResponse> => {
     const session = await mongoose.startSession();
-    session.startTransaction();
 
     try {
+      session.startTransaction();
+
       const email = payload.email.trim().toLowerCase();
 
       let user = await UserModel.findOneAndUpdate(
@@ -39,6 +49,18 @@ export const authService = {
       if (!user) throw new Error('Failed to create or update user');
       if (user.isBlocked) throw new Error('User is blocked');
 
+      if (user.defaultWorkspaceId) {
+        await session.commitTransaction();
+        return {
+          _id: user._id as mongoose.Types.ObjectId,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatarUrl: user.avatarUrl,
+          defaultWorkspaceId: user.defaultWorkspaceId,
+        };
+      }
+
       const defaultWorkspace = await workspaceServices.createDefaultWorkspace(
         user._id as mongoose.Types.ObjectId,
         session,
@@ -52,10 +74,9 @@ export const authService = {
       await user.save({ session });
 
       await session.commitTransaction();
-      session.endSession();
 
       return {
-        _id: user._id,
+        _id: user._id as mongoose.Types.ObjectId,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -64,15 +85,13 @@ export const authService = {
       };
     } catch (err) {
       await session.abortTransaction();
-      session.endSession();
       throw err;
+    } finally {
+      session.endSession();
     }
   },
 
   getUserInfoById: async (id: string) => {
-    const user = await UserModel.findById(id).select(
-      '-workspaces -googleId -isBlocked -lastLoginAt ',
-    );
-    return user ? user : null;
+    return UserModel.findById(id).select('-workspaces -googleId -isBlocked -lastLoginAt');
   },
 };

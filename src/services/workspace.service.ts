@@ -1,7 +1,7 @@
-import { WorkspaceModel } from '@/models/workspace.model';
 import mongoose from 'mongoose';
-import { projectServices } from './project.service';
-import { EProjectStatus, ProjectModel } from '@/models';
+import { projectServices } from '@/services';
+import { EProjectStatus, IBillingPlanType, ProjectModel, WorkspaceModel } from '@/models';
+import { CreateNewWorkspaceBody } from '@/validations';
 
 export const workspaceServices = {
   createDefaultWorkspace: async (
@@ -49,5 +49,21 @@ export const workspaceServices = {
     }
 
     return project;
+  },
+  createNewWorkspace: async (ownerId: string, body: CreateNewWorkspaceBody) => {
+    const payload = {
+      ...body,
+      ownerId,
+      projects: [],
+      members: [],
+      settings: {
+        billingPlan: IBillingPlanType.FREE,
+        apiKeys: [],
+      },
+      isDefault: false,
+    };
+    const workspace = new WorkspaceModel(payload);
+
+    return await workspace.save();
   },
 };
