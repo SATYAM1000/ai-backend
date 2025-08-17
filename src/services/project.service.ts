@@ -25,8 +25,15 @@ export const projectServices = {
 
     return await ProjectModel.create([defaultProjectPayload], { session });
   },
-  getProjectById: async (projectId: mongoose.Types.ObjectId) => {
-    const project = await ProjectModel.findById(projectId);
+  getProjectById: async (userId: string, projectId: string) => {
+    const project = await ProjectModel.findOne({
+      _id: projectId,
+      'collaborators.userId': userId,
+    })
+      .populate('workspaceId', 'name')
+      .populate('collaborators.userId', 'name email')
+      .populate('queryIds');
+
     if (!project) throw new Error('Project not found');
     return project;
   },

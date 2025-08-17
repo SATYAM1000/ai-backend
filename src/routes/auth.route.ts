@@ -3,7 +3,7 @@ import { authControllers } from '@/controllers';
 import { middlewares } from '@/middlewares';
 import { validationSchema } from '@/validations';
 
-const userRouter = Router();
+export const userRouter = Router();
 
 userRouter.post(
   '/google',
@@ -11,5 +11,3 @@ userRouter.post(
   authControllers.upsertGoogleUser,
 );
 userRouter.get('/me/:id', authControllers.getUserInfo);
-
-export default userRouter;

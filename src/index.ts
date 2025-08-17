@@ -2,9 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { middlewares } from '@/middlewares';
-import userRouter from '@/routes/auth.route';
+
 import { env } from '@/config';
-import { workspaceRouter } from './routes/workspace.route';
+import { projectsRouter, userRouter, workspaceRouter } from '@/routes';
 
 const app = express();
 app.use(express.json());
@@ -24,6 +24,7 @@ app.use(middlewares.requestHandler);
 
 app.use('/api/v1/auth', userRouter);
 app.use('/api/v1/workspace', workspaceRouter);
+app.use('/api/v1/projects', projectsRouter);
 
 app.use(middlewares.notFoundHandler);
 
