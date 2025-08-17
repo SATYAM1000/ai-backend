@@ -38,3 +38,20 @@ export const connectToLogsDB = async () => {
     process.exit(1);
   }
 };
+
+export const disconnectFromDB = async () => {
+  try {
+    if (globalConns.mainDB) {
+      await globalConns.mainDB.close();
+      utils.logger('info', '🛑 Disconnected from MainDB');
+    }
+    if (globalConns.logsDB) {
+      await globalConns.logsDB.close();
+      utils.logger('info', '🛑 Disconnected from LogsDB');
+    }
+  } catch (error) {
+    utils.logger('error', '❌ Failed to disconnect from DB', {
+      error: error instanceof Error ? error.stack : error,
+    });
+  }
+};

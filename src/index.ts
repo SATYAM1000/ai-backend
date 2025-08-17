@@ -9,13 +9,13 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import compression from 'compression';
 import hpp from 'hpp';
-import { utils } from './utils';
+import { utils } from '@/utils';
 
 const app = express();
 
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 10,
   message: 'Too many requests from this IP, please try again in an hour!',
   statusCode: 429,
   handler: (req, _res, next) => {
