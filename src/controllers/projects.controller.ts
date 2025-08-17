@@ -16,6 +16,8 @@ export const ProjectsController = {
       return utils.httpError(next, new Error('Project not found'), req, 404);
     }
 
+    
+
     return utils.httpResponse(req, res, 200, 'Project fetched successfully', project);
   }),
 };

@@ -29,6 +29,7 @@ export const projectServices = {
     const project = await ProjectModel.findOne({
       _id: new mongoose.Types.ObjectId(projectId),
       'collaborators.userId': new mongoose.Types.ObjectId(userId),
+      status: EProjectStatus.ACTIVE,
     })
       .populate('workspaceId', 'name')
       .populate('collaborators.userId', 'name email')
