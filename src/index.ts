@@ -5,10 +5,16 @@ import { middlewares } from '@/middlewares';
 
 import { env } from '@/config';
 import { projectsRouter, userRouter, workspaceRouter } from '@/routes';
+import helmet from 'helmet';
+import compression from 'compression';
+import hpp from 'hpp';
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet());
+app.use(hpp());
+app.use(compression());
 
 app.use(express.urlencoded({ extended: true }));
 
