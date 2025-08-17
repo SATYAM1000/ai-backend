@@ -95,4 +95,14 @@ export const workspaceServices = {
     }
     return updatedWorkspace;
   },
+  deleteWorkspace: async (workspaceId: string, ownerId: string) => {
+    const workspace = await WorkspaceModel.findOneAndDelete({
+      ownerId,
+      _id: workspaceId,
+    });
+    if (!workspace) {
+      throw new Error('Workspace not found');
+    }
+    return workspace;
+  },
 };

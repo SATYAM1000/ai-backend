@@ -24,3 +24,5 @@ workspaceRouter.patch(
   middlewares.validationHandler(validationSchema.workspace.updateWorkspaceSchema),
   workspaceControllers.updateExistingWorkspace,
 );
+
+workspaceRouter.delete('/:id', middlewares.authHandler, workspaceControllers.deleteWorkspace);
