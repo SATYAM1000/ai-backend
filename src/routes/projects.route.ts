@@ -12,3 +12,9 @@ projectsRouter.post(
   middlewares.authHandler,
   ProjectsController.createNewProjectInWorkspace,
 );
+
+projectsRouter.delete(
+  '/:id',
+  middlewares.authHandler,
+  ProjectsController.deleteProjectFromWorkspace,
+);

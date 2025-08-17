@@ -44,4 +44,30 @@ export const projectServices = {
       createdBy: new mongoose.Types.ObjectId(userId),
     });
   },
+  deleteProjectFromWorkspace: async (projectId: string, userId: string) => {
+    const project = await ProjectModel.findOne({
+      _id: new mongoose.Types.ObjectId(projectId),
+      status: EProjectStatus.ACTIVE,
+      $or: [
+        { createdBy: new mongoose.Types.ObjectId(userId) },
+        {
+          collaborators: {
+            $elemMatch: {
+              userId: new mongoose.Types.ObjectId(userId),
+              role: { $in: ['owner', 'admin'] },
+            },
+          },
+        },
+      ],
+    });
+
+    if (!project) {
+      throw new Error('Project not found or access denied');
+    }
+    return await ProjectModel.findByIdAndUpdate(
+      projectId,
+      { status: EProjectStatus.ARCHIVED },
+      { new: true },
+    );
+  },
 };

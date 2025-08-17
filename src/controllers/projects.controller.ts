@@ -36,4 +36,15 @@ export const ProjectsController = {
       return utils.httpResponse(req, res, 201, 'Project created successfully', project);
     },
   ),
+  deleteProjectFromWorkspace: utils.asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const projectId = req.params.id as string;
+      const userId = req.user?._id as string;
+      if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
+        return utils.httpError(next, new Error('Invalid project ID'), req, 400);
+      }
+      const result = await projectServices.deleteProjectFromWorkspace(projectId, userId);
+      return utils.httpResponse(req, res, 200, 'Project deleted successfully', result);
+    },
+  ),
 };
