@@ -51,6 +51,11 @@ export const workspaceServices = {
     return project;
   },
   createNewWorkspace: async (ownerId: string, body: CreateNewWorkspaceBody) => {
+    const existingWorkspace = await WorkspaceModel.findOne({ ownerId: ownerId, name: body.name });
+
+    if (existingWorkspace) {
+      throw new Error('Workspace with this name already exists');
+    }
     const payload = {
       ...body,
       ownerId,

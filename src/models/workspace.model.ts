@@ -131,5 +131,6 @@ workspaceSchema.index(
   { name: 'text', description: 'text' },
   { weights: { name: 5, description: 1 } },
 );
+workspaceSchema.index({ ownerId: 1, name: 1 }, { unique: true });
 
 export const WorkspaceModel = mongoose.model<IWorkspaceSchema>('Workspace', workspaceSchema);
