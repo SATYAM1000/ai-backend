@@ -26,6 +26,7 @@ export type THttpError = {
 export interface IAuthenticatedRequest {
   _id: string;
   email: string;
+  role: string;
 }
 
 declare global {
