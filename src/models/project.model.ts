@@ -38,7 +38,6 @@ export interface IProjectSchema extends Document {
   updatedAt: Date;
 }
 
-
 const projectSchema = new mongoose.Schema<IProjectSchema>(
   {
     workspaceId: {
@@ -70,6 +69,7 @@ const projectSchema = new mongoose.Schema<IProjectSchema>(
     },
     collaborators: [
       {
+        _id: false,
         userId: {
           type: mongoose.Types.ObjectId,
           ref: 'User',

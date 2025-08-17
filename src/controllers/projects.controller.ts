@@ -11,7 +11,11 @@ export const ProjectsController = {
       return utils.httpError(next, new Error('Invalid project ID'), req, 400);
     }
 
-    const project = projectServices.getProjectById(userId, projectId);
+    const project = await projectServices.getProjectById(userId, projectId);
+    if (!project) {
+      return utils.httpError(next, new Error('Project not found'), req, 404);
+    }
+
     return utils.httpResponse(req, res, 200, 'Project fetched successfully', project);
   }),
 };

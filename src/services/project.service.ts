@@ -27,14 +27,13 @@ export const projectServices = {
   },
   getProjectById: async (userId: string, projectId: string) => {
     const project = await ProjectModel.findOne({
-      _id: projectId,
-      'collaborators.userId': userId,
+      _id: new mongoose.Types.ObjectId(projectId),
+      'collaborators.userId': new mongoose.Types.ObjectId(userId),
     })
       .populate('workspaceId', 'name')
       .populate('collaborators.userId', 'name email')
       .populate('queryIds');
 
-    if (!project) throw new Error('Project not found');
     return project;
   },
 };
