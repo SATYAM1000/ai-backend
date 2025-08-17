@@ -105,8 +105,12 @@ export const workspaceServices = {
     }
     return workspace;
   },
-  getWorkspaceInfoById: async (workspaceId: string) => {
-    const workspace = await WorkspaceModel.findById(workspaceId);
+  getWorkspaceInfoById: async (workspaceId: string, ownerId: string) => {
+    const workspace = await WorkspaceModel.findOne({
+      _id: workspaceId,
+      ownerId: new mongoose.Types.ObjectId(ownerId),
+    });
+
     if (!workspace) {
       throw new Error('Workspace not found');
     }

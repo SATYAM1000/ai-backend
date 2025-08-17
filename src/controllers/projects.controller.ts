@@ -1,5 +1,6 @@
-import { projectServices } from '@/services';
+import { projectServices, workspaceServices } from '@/services';
 import { utils } from '@/utils';
+import { CreateNewProjectBody } from '@/validations';
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 
@@ -15,9 +16,24 @@ export const ProjectsController = {
     if (!project) {
       return utils.httpError(next, new Error('Project not found'), req, 404);
     }
-
-    
-
     return utils.httpResponse(req, res, 200, 'Project fetched successfully', project);
   }),
+  createNewProjectInWorkspace: utils.asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { body } = req as { body: CreateNewProjectBody };
+      const { workspaceId } = body;
+      const userId = req.user?._id as string;
+      const workspace = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
+      if (!workspace) {
+        return utils.httpError(next, new Error('Workspace not found or access denied'), req, 404);
+      }
+
+      const project = await projectServices.createNewProject(body, userId);
+      if (!project) {
+        return utils.httpError(next, new Error('Failed to create project'), req, 400);
+      }
+
+      return utils.httpResponse(req, res, 201, 'Project created successfully', project);
+    },
+  ),
 };

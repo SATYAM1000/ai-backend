@@ -1,4 +1,5 @@
 import { EProjectStatus, EProjectVisibility, ProjectModel } from '@/models';
+import { CreateNewProjectBody } from '@/validations';
 import mongoose from 'mongoose';
 
 export const projectServices = {
@@ -36,5 +37,11 @@ export const projectServices = {
       .populate('queryIds');
 
     return project;
+  },
+  createNewProject: async (payload: CreateNewProjectBody, userId: string) => {
+    return await ProjectModel.create({
+      ...payload,
+      createdBy: new mongoose.Types.ObjectId(userId),
+    });
   },
 };

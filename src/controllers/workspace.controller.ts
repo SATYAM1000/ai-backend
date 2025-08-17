@@ -52,7 +52,8 @@ export const workspaceControllers = {
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
       return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
     }
-    const result = await workspaceServices.getWorkspaceInfoById(workspaceId);
+    const userId = req.user?._id as string;
+    const result = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
     return utils.httpResponse(req, res, 200, 'Workspace fetched successfully', result);
   }),
 };
