@@ -26,3 +26,5 @@ workspaceRouter.patch(
 );
 
 workspaceRouter.delete('/:id', middlewares.authHandler, workspaceControllers.deleteWorkspace);
+
+workspaceRouter.get('/:id', middlewares.authHandler, workspaceControllers.getWorkspaceInfoById);

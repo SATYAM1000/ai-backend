@@ -47,4 +47,12 @@ export const workspaceControllers = {
     const result = await workspaceServices.deleteWorkspace(workspaceId, ownerId);
     return utils.httpResponse(req, res, 200, 'Workspace deleted successfully', result);
   }),
+  getWorkspaceInfoById: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    const workspaceId = req.params.id;
+    if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+    }
+    const result = await workspaceServices.getWorkspaceInfoById(workspaceId);
+    return utils.httpResponse(req, res, 200, 'Workspace fetched successfully', result);
+  }),
 };
