@@ -1,6 +1,6 @@
 import { workspaceServices } from '@/services';
 import { utils } from '@/utils';
-import { CreateNewWorkspaceBody } from '@/validations';
+import { CreateNewWorkspaceBody, UpdateWorkspaceBody } from '@/validations';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
@@ -25,5 +25,17 @@ export const workspaceControllers = {
     const ownerId = req.user?._id as string;
     const result = await workspaceServices.createNewWorkspace(ownerId, body);
     return utils.httpResponse(req, res, 200, 'Workspace created successfully', result);
+  }),
+  updateExistingWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    const workspaceId = req.params.id;
+    const ownerId = req.user?._id as string;
+    if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+    }
+
+    const { body } = req as { body: UpdateWorkspaceBody };
+
+    const result = await workspaceServices.updateExistingWorkspace(workspaceId, ownerId, body);
+    return utils.httpResponse(req, res, 200, 'Workspace updated successfully', result);
   }),
 };

@@ -17,3 +17,10 @@ workspaceRouter.post(
   middlewares.validationHandler(validationSchema.workspace.createWorkspaceSchema),
   workspaceControllers.createNewWorkspace,
 );
+
+workspaceRouter.patch(
+  '/:id',
+  middlewares.authHandler,
+  middlewares.validationHandler(validationSchema.workspace.updateWorkspaceSchema),
+  workspaceControllers.updateExistingWorkspace,
+);

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { projectServices } from '@/services';
 import { EProjectStatus, IBillingPlanType, ProjectModel, WorkspaceModel } from '@/models';
-import { CreateNewWorkspaceBody } from '@/validations';
+import { CreateNewWorkspaceBody, UpdateWorkspaceBody } from '@/validations';
 
 export const workspaceServices = {
   createDefaultWorkspace: async (
@@ -70,5 +70,29 @@ export const workspaceServices = {
     const workspace = new WorkspaceModel(payload);
 
     return await workspace.save();
+  },
+  updateExistingWorkspace: async (
+    workspaceId: string,
+    ownerId: string,
+    body: UpdateWorkspaceBody,
+  ) => {
+    const existingWorkspace = await WorkspaceModel.findOne({
+      ownerId,
+      name: body.name,
+      _id: { $ne: workspaceId },
+    });
+
+    if (existingWorkspace) {
+      throw new Error('Workspace with this name already exists');
+    }
+    const updatedWorkspace = await WorkspaceModel.findByIdAndUpdate(
+      workspaceId,
+      { ...body },
+      { new: true, runValidators: true },
+    );
+    if (!updatedWorkspace) {
+      throw new Error('Workspace not found');
+    }
+    return updatedWorkspace;
   },
 };
