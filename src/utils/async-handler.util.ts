@@ -10,7 +10,6 @@ export const asyncHandler =
     try {
       await fn(req, res, next);
     } catch (error) {
-      // Convert plain errors to THttpError format
       const request = req as Request;
       const httpError: THttpError = {
         success: false,

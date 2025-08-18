@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 export const ProjectsController = {
   getProjectInfo: utils.asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const projectId = req.params.id as string;
-    const userId = req.user?._id as string;
+    const userId = req.user!._id;
     if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
       return utils.httpError(next, new Error('Invalid project ID'), req, 400);
     }
@@ -22,7 +22,7 @@ export const ProjectsController = {
     async (req: Request, res: Response, next: NextFunction) => {
       const { body } = req as { body: CreateNewProjectBody };
       const { workspaceId } = body;
-      const userId = req.user?._id as string;
+      const userId = req.user!._id;
       const workspace = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
       if (!workspace) {
         return utils.httpError(next, new Error('Workspace not found or access denied'), req, 404);
@@ -39,7 +39,7 @@ export const ProjectsController = {
   deleteProjectFromWorkspace: utils.asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const projectId = req.params.id as string;
-      const userId = req.user?._id as string;
+      const userId = req.user!._id;
       if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
         return utils.httpError(next, new Error('Invalid project ID'), req, 400);
       }

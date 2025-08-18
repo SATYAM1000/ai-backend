@@ -26,7 +26,7 @@ export const projectServices = {
 
     return await ProjectModel.create([defaultProjectPayload], { session });
   },
-  getProjectById: async (userId: string, projectId: string) => {
+  getProjectById: async (userId: mongoose.Types.ObjectId, projectId: string) => {
     const project = await ProjectModel.findOne({
       _id: new mongoose.Types.ObjectId(projectId),
       'collaborators.userId': new mongoose.Types.ObjectId(userId),
@@ -38,13 +38,13 @@ export const projectServices = {
 
     return project;
   },
-  createNewProject: async (payload: CreateNewProjectBody, userId: string) => {
+  createNewProject: async (payload: CreateNewProjectBody, userId: mongoose.Types.ObjectId) => {
     return await ProjectModel.create({
       ...payload,
       createdBy: new mongoose.Types.ObjectId(userId),
     });
   },
-  deleteProjectFromWorkspace: async (projectId: string, userId: string) => {
+  deleteProjectFromWorkspace: async (projectId: string, userId: mongoose.Types.ObjectId) => {
     const project = await ProjectModel.findOne({
       _id: new mongoose.Types.ObjectId(projectId),
       status: EProjectStatus.ACTIVE,

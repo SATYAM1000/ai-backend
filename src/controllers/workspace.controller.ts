@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 export const workspaceControllers = {
   getLastEditProjectFromWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
     const workspaceId = req.params.id as string;
-    const userId = req.user?._id as string;
+    const userId = req.user?._id;
     if (!workspaceId) {
       return utils.httpError(next, new Error('Workspace ID is required'), req, 400);
     }
@@ -22,13 +22,13 @@ export const workspaceControllers = {
   }),
   createNewWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
     const { body } = req as { body: CreateNewWorkspaceBody };
-    const ownerId = req.user?._id as string;
+    const ownerId = req.user!._id;
     const result = await workspaceServices.createNewWorkspace(ownerId, body);
     return utils.httpResponse(req, res, 200, 'Workspace created successfully', result);
   }),
   updateExistingWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
     const workspaceId = req.params.id;
-    const ownerId = req.user?._id as string;
+    const ownerId = req.user!._id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
       return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
     }
@@ -40,7 +40,7 @@ export const workspaceControllers = {
   }),
   deleteWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
     const workspaceId = req.params.id;
-    const ownerId = req.user?._id as string;
+    const ownerId = req.user!._id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
       return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
     }
@@ -52,8 +52,67 @@ export const workspaceControllers = {
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
       return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
     }
-    const userId = req.user?._id as string;
+    const userId = req.user!._id;
     const result = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
     return utils.httpResponse(req, res, 200, 'Workspace fetched successfully', result);
+  }),
+  //TODO:
+  getUserWorkspaces: utils.asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!._id;
+    const result = await workspaceServices.getUserWorkspaces(userId);
+    return utils.httpResponse(req, res, 200, 'Workspaces fetched successfully', result);
+  }),
+  //TODO:
+  getMembers: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: add member
+  addMember: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  // TODO: update member role:
+  updateMemberRole: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: remove member role
+  removeMember: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  // TODO: transfer ownership
+  transferOwnership: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: invite member to a workspace
+  inviteMember: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: get invites
+  getInvites: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: accept workspace invite
+  acceptInvite: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+
+  //TODO: reject workspace invite
+  rejectInvite: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: leave workspace
+  leaveWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: get workspace projects
+  getWorkspaceProjects: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: add api keys
+  addApiKeys: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
+  }),
+  //TODO: remove apikeys
+  removeApiKeys: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    return true;
   }),
 };

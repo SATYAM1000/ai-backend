@@ -25,6 +25,11 @@ export interface IWorkspaceMember {
   joinedAt: Date;
 }
 
+export enum EWorkspaceStatus {
+  ACTIVE = 'active',
+  ARCHIVED = 'archived',
+}
+
 export interface IWorkspaceSchema extends Document {
   name: string;
   description?: string;
@@ -38,6 +43,7 @@ export interface IWorkspaceSchema extends Document {
     billingPlan: IBillingPlanType;
     apiKeys: AIProviderApiKey[];
   };
+  status: EWorkspaceStatus;
   isDefault: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -117,6 +123,11 @@ const workspaceSchema = new mongoose.Schema<IWorkspaceSchema>(
     isDefault: {
       type: Boolean,
       default: false,
+    },
+    status: {
+      type: String,
+      enum: Object.values(EWorkspaceStatus),
+      default: EWorkspaceStatus.ACTIVE,
     },
   },
   {

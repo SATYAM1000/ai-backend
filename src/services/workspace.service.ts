@@ -50,7 +50,7 @@ export const workspaceServices = {
 
     return project;
   },
-  createNewWorkspace: async (ownerId: string, body: CreateNewWorkspaceBody) => {
+  createNewWorkspace: async (ownerId: mongoose.Types.ObjectId, body: CreateNewWorkspaceBody) => {
     const existingWorkspace = await WorkspaceModel.findOne({ ownerId: ownerId, name: body.name });
 
     if (existingWorkspace) {
@@ -73,7 +73,7 @@ export const workspaceServices = {
   },
   updateExistingWorkspace: async (
     workspaceId: string,
-    ownerId: string,
+    ownerId: mongoose.Types.ObjectId,
     body: UpdateWorkspaceBody,
   ) => {
     const existingWorkspace = await WorkspaceModel.findOne({
@@ -95,7 +95,7 @@ export const workspaceServices = {
     }
     return updatedWorkspace;
   },
-  deleteWorkspace: async (workspaceId: string, ownerId: string) => {
+  deleteWorkspace: async (workspaceId: string, ownerId: mongoose.Types.ObjectId) => {
     const workspace = await WorkspaceModel.findOneAndDelete({
       ownerId,
       _id: workspaceId,
@@ -105,7 +105,7 @@ export const workspaceServices = {
     }
     return workspace;
   },
-  getWorkspaceInfoById: async (workspaceId: string, ownerId: string) => {
+  getWorkspaceInfoById: async (workspaceId: string, ownerId: mongoose.Types.ObjectId) => {
     const workspace = await WorkspaceModel.findOne({
       _id: workspaceId,
       ownerId: new mongoose.Types.ObjectId(ownerId),
@@ -115,5 +115,10 @@ export const workspaceServices = {
       throw new Error('Workspace not found');
     }
     return workspace;
+  },
+  //TODO: need to complete this for soft delete
+  getUserWorkspaces: async (userId: mongoose.Types.ObjectId) => {
+    const workspaces = await WorkspaceModel.find({ ownerId: userId,  });
+    return workspaces;
   },
 };

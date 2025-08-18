@@ -32,7 +32,7 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const user = await authService.getUserInfoById(decoded.sub);
     if (!user) return unauthorized();
 
-    req.user = { _id: String(user._id), email: user.email, role: user.role };
+    req.user = { _id: user._id as mongoose.Types.ObjectId, email: user.email, role: user.role };
     return next();
   } catch (error) {
     return utils.httpError(next, error, req);

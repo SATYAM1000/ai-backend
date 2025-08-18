@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 export type THttpResponse = {
   success: boolean;
   statusCode: number;
@@ -24,7 +26,7 @@ export type THttpError = {
 };
 
 export interface IAuthenticatedRequest {
-  _id: string;
+  _id: mongoose.Types.ObjectId;
   email: string;
   role: string;
 }

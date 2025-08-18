@@ -1,16 +1,14 @@
-/**
- * Build a Redis key from parts
- * Ensures consistent namespacing: namespace:subnamespace:id
- *
- * Example:
- * createRedisKey('user', userId, 'session') -> "user:123:session"
- */
 
-function createRedisKey(...parts: (string | number | undefined | null)[]): string {
-  return parts
-    .filter(Boolean) // remove null undefined
-    .map(String) // convert numbers to strings
-    .join(':') // join with colons
-    .toLowerCase(); // normalize case
+function createUserKey(userId: string) {
+  return `user:${userId}`;
 }
-export const redisUtils = { createRedisKey };
+
+function createWorkspaceKey(workspaceId: string) {
+  return `workspace:${workspaceId}`;
+}
+
+function createProjectKey(projectId: string) {
+  return `project:${projectId}`;
+}
+
+export const redisUtils = { createUserKey, createWorkspaceKey, createProjectKey };
