@@ -44,7 +44,7 @@ app.use(
 app.use(middlewares.requestHandler);
 
 app.use('/api/v1/auth', userRouter);
-app.use('/api/v1/workspace', workspaceRouter);
+app.use('/api/v1/workspaces', workspaceRouter);
 app.use('/api/v1/projects', projectsRouter);
 
 app.use(middlewares.notFoundHandler);

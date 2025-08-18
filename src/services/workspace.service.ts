@@ -135,9 +135,16 @@ export const workspaceServices = {
     }
     return workspace;
   },
-  //TODO: need to complete this for soft delete
+
   getUserWorkspaces: async (userId: mongoose.Types.ObjectId) => {
-    const workspaces = await WorkspaceModel.find({ ownerId: userId });
+    const workspaces = await WorkspaceModel.find({
+      $or: [{ ownerId: userId }, { 'members.userId': userId }],
+      status: EWorkspaceStatus.ACTIVE,
+    })
+      .populate('ownerId', 'name avatarUrl')
+      .select('name description logo ownerId status isDefault createdAt updatedAt')
+      .sort({ updatedAt: -1 })
+      .lean();
     return workspaces;
   },
 };
