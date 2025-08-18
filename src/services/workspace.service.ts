@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 import { projectServices } from '@/services';
-import { EProjectStatus, IBillingPlanType, ProjectModel, WorkspaceModel } from '@/models';
+import {
+  EProjectStatus,
+  EWorkspaceStatus,
+  IBillingPlanType,
+  ProjectModel,
+  WorkspaceModel,
+} from '@/models';
 import { CreateNewWorkspaceBody, UpdateWorkspaceBody } from '@/validations';
 
 export const workspaceServices = {
@@ -51,7 +57,11 @@ export const workspaceServices = {
     return project;
   },
   createNewWorkspace: async (ownerId: mongoose.Types.ObjectId, body: CreateNewWorkspaceBody) => {
-    const existingWorkspace = await WorkspaceModel.findOne({ ownerId: ownerId, name: body.name });
+    const existingWorkspace = await WorkspaceModel.findOne({
+      ownerId: ownerId,
+      name: body.name,
+      status: EWorkspaceStatus.ACTIVE,
+    });
 
     if (existingWorkspace) {
       throw new Error('Workspace with this name already exists');
@@ -80,6 +90,7 @@ export const workspaceServices = {
       ownerId,
       name: body.name,
       _id: { $ne: workspaceId },
+      status: EWorkspaceStatus.ACTIVE,
     });
 
     if (existingWorkspace) {
@@ -96,19 +107,27 @@ export const workspaceServices = {
     return updatedWorkspace;
   },
   deleteWorkspace: async (workspaceId: string, ownerId: mongoose.Types.ObjectId) => {
-    const workspace = await WorkspaceModel.findOneAndDelete({
+    const workspace = await WorkspaceModel.findOne({
       ownerId,
       _id: workspaceId,
+      status: EWorkspaceStatus.ACTIVE,
     });
     if (!workspace) {
       throw new Error('Workspace not found');
     }
-    return workspace;
+
+    const deletedWorkspace = await WorkspaceModel.updateOne(
+      { _id: workspaceId },
+      { status: EWorkspaceStatus.ARCHIVED },
+    );
+
+    return deletedWorkspace;
   },
   getWorkspaceInfoById: async (workspaceId: string, ownerId: mongoose.Types.ObjectId) => {
     const workspace = await WorkspaceModel.findOne({
       _id: workspaceId,
       ownerId: new mongoose.Types.ObjectId(ownerId),
+      status: EWorkspaceStatus.ACTIVE,
     });
 
     if (!workspace) {
@@ -118,7 +137,7 @@ export const workspaceServices = {
   },
   //TODO: need to complete this for soft delete
   getUserWorkspaces: async (userId: mongoose.Types.ObjectId) => {
-    const workspaces = await WorkspaceModel.find({ ownerId: userId,  });
+    const workspaces = await WorkspaceModel.find({ ownerId: userId });
     return workspaces;
   },
 };
