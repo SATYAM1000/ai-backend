@@ -1,5 +1,5 @@
 import { workspaceServices } from '@/services';
-import { utils, HttpError } from '@/utils';
+import { utils, HttpError, HttpResponse } from '@/utils';
 import {
   CreateNewWorkspaceBody,
   InviteMemberToWorkspaceBody,
@@ -19,13 +19,13 @@ export const workspaceControllers = {
       new mongoose.Types.ObjectId(workspaceId),
       new mongoose.Types.ObjectId(userId),
     );
-    return utils.httpResponse(req, res, 200, 'Project fetched successfully', project);
+    return HttpResponse(req, res, 200, 'Project fetched successfully', project);
   }),
   createNewWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
     const { body } = req as { body: CreateNewWorkspaceBody };
     const ownerId = req.user!._id;
     const result = await workspaceServices.createNewWorkspace(ownerId, body);
-    return utils.httpResponse(req, res, 200, 'Workspace created successfully', result);
+    return HttpResponse(req, res, 200, 'Workspace created successfully', result);
   }),
   updateExistingWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
@@ -37,7 +37,7 @@ export const workspaceControllers = {
     const { body } = req as { body: UpdateWorkspaceBody };
 
     const result = await workspaceServices.updateExistingWorkspace(workspaceId, ownerId, body);
-    return utils.httpResponse(req, res, 200, 'Workspace updated successfully', result);
+    return HttpResponse(req, res, 200, 'Workspace updated successfully', result);
   }),
   deleteWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
@@ -46,7 +46,7 @@ export const workspaceControllers = {
       throw new HttpError('Invalid workspace ID', 400);
     }
     const result = await workspaceServices.deleteWorkspace(workspaceId, ownerId);
-    return utils.httpResponse(req, res, 200, 'Workspace deleted successfully', result);
+    return HttpResponse(req, res, 200, 'Workspace deleted successfully', result);
   }),
   getWorkspaceInfoById: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
@@ -55,12 +55,12 @@ export const workspaceControllers = {
     }
     const userId = req.user!._id;
     const result = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
-    return utils.httpResponse(req, res, 200, 'Workspace fetched successfully', result);
+    return HttpResponse(req, res, 200, 'Workspace fetched successfully', result);
   }),
   getUserWorkspaces: utils.asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!._id;
     const result = await workspaceServices.getUserWorkspaces(userId);
-    return utils.httpResponse(req, res, 200, 'Workspaces fetched successfully', result);
+    return HttpResponse(req, res, 200, 'Workspaces fetched successfully', result);
   }),
   getWorkspaceMembers: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
@@ -68,7 +68,7 @@ export const workspaceControllers = {
       throw new HttpError('Invalid workspace ID', 400);
     }
     const members = await workspaceServices.getWorkspaceMembers(workspaceId);
-    return utils.httpResponse(req, res, 200, 'Members fetched successfully', members);
+    return HttpResponse(req, res, 200, 'Members fetched successfully', members);
   }),
   getWorkspaceProjects: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
@@ -76,7 +76,7 @@ export const workspaceControllers = {
       throw new HttpError('Invalid workspace ID', 400);
     }
     const projects = await workspaceServices.getWorkspaceProjects(workspaceId);
-    return utils.httpResponse(req, res, 200, 'Projects fetched successfully', projects);
+    return HttpResponse(req, res, 200, 'Projects fetched successfully', projects);
   }),
   inviteMemberToWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
@@ -86,6 +86,6 @@ export const workspaceControllers = {
     const { email, role } = req.body as InviteMemberToWorkspaceBody;
     const result = await workspaceServices.inviteMemberToWorkspace(workspaceId, email, role, req);
 
-    return utils.httpResponse(req, res, 200, 'Member invited successfully', result);
+    return HttpResponse(req, res, 200, 'Member invited successfully', result);
   }),
 };
