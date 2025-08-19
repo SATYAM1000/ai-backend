@@ -85,7 +85,6 @@ export const workspaceControllers = {
     }
     const { email, role } = req.body as InviteMemberToWorkspaceBody;
     const result = await workspaceServices.inviteMemberToWorkspace(workspaceId, email, role, req);
-
     return HttpResponse(req, res, 200, 'Member invited successfully', result);
   }),
 };
