@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { env, logger, resend } from '@/config';
+import { env, resend } from '@/config';
 
 export const emailServices = {
   sendWorkspaceInvitationEmail: async (
@@ -11,7 +11,7 @@ export const emailServices = {
     try {
       const templatePath = path.join(
         __dirname,
-        '..',
+        'src',
         'templates',
         'invitation-email.template.html',
       );
@@ -27,13 +27,8 @@ export const emailServices = {
         subject: `Invitation to join ${workspaceName}`,
         html,
       });
-    } catch (error) {
-      logger.error(
-        `Failed to send invitation email: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
-      throw new Error(
-        `Failed to send invitation email: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+    } catch {
+      throw new Error('Failed to send invitation email');
     }
   },
 };

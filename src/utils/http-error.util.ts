@@ -4,6 +4,22 @@ import { NextFunction, Request } from 'express';
 import { utils } from '.';
 import { env } from '@/config';
 
+// Custom HttpError class that carries status code
+export class HttpError extends Error {
+  public statusCode: number;
+
+  constructor(message: string, statusCode: number = 500) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = 'HttpError';
+    
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, HttpError);
+    }
+  }
+}
+
 const errorObject = (
   err: Error | unknown,
   req: Request,

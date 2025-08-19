@@ -18,6 +18,7 @@ export const ProjectsController = {
     }
     return utils.httpResponse(req, res, 200, 'Project fetched successfully', project);
   }),
+  
   createNewProjectInWorkspace: utils.asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const { body } = req as { body: CreateNewProjectBody };

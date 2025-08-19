@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
 
+export enum BullMQJobsName {
+  SEND_WORKSPACE_INVITATION_EMAIL = 'SEND_WORKSPACE_INVITATION_EMAIL',
+  SEND_PROJECT_INVITATION_EMAIL = 'SEND_PROJECT_INVITATION_EMAIL',
+}
+
 export type THttpResponse = {
   success: boolean;
   statusCode: number;

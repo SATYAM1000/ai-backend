@@ -17,20 +17,9 @@ import { utils } from '@/utils';
     utils.logger('info', '✅ All services connected (DB + Redis)');
     
     // Initialize BullMQ components after Redis is connected
-    try {
-      initEmailQueue();
-      utils.logger('info', '✅ Email queue initialized');
-      initEmailWorker();
-      utils.logger('info', '✅ Email worker initialized');
-      utils.logger('info', '✅ BullMQ components initialized');
-    } catch (bullmqError) {
-      console.error('BullMQ Error Details:', bullmqError);
-      utils.logger('error', '❌ Failed to initialize BullMQ components', {
-        error: bullmqError instanceof Error ? bullmqError.stack : bullmqError,
-        message: bullmqError instanceof Error ? bullmqError.message : 'Unknown error',
-      });
-      throw bullmqError;
-    }
+    initEmailQueue();
+    initEmailWorker();
+    utils.logger('info', '✅ BullMQ components initialized');
 
     app.listen(env.PORT, () => {
       utils.logger('info', `🚀 Server running on http://localhost:${env.PORT}`);

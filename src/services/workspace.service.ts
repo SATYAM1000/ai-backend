@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import mongoose from 'mongoose';
 import { emailServices, invitationServices, projectServices } from '@/services';
+import { HttpError } from '@/utils';
 import {
   EProjectStatus,
   EWorkspaceStatus,
@@ -55,7 +56,7 @@ export const workspaceServices = {
       .exec();
 
     if (!project) {
-      throw new Error('No projects found in this workspace');
+      throw new HttpError('No projects found in this workspace', 404);
     }
 
     return project;
@@ -68,7 +69,7 @@ export const workspaceServices = {
     });
 
     if (existingWorkspace) {
-      throw new Error('Workspace with this name already exists');
+      throw new HttpError('Workspace with this name already exists', 409);
     }
     const payload = {
       ...body,
@@ -98,7 +99,7 @@ export const workspaceServices = {
     });
 
     if (existingWorkspace) {
-      throw new Error('Workspace with this name already exists');
+      throw new HttpError('Workspace with this name already exists', 409);
     }
     const updatedWorkspace = await WorkspaceModel.findByIdAndUpdate(
       workspaceId,
@@ -106,7 +107,7 @@ export const workspaceServices = {
       { new: true, runValidators: true },
     );
     if (!updatedWorkspace) {
-      throw new Error('Workspace not found');
+      throw new HttpError('Workspace not found', 404);
     }
     return updatedWorkspace;
   },
@@ -117,7 +118,7 @@ export const workspaceServices = {
       status: EWorkspaceStatus.ACTIVE,
     });
     if (!workspace) {
-      throw new Error('Workspace not found');
+      throw new HttpError('Workspace not found', 404);
     }
 
     const deletedWorkspace = await WorkspaceModel.updateOne(
@@ -135,7 +136,7 @@ export const workspaceServices = {
     });
 
     if (!workspace) {
-      throw new Error('Workspace not found');
+      throw new HttpError('Workspace not found', 404);
     }
     return workspace;
   },
@@ -151,7 +152,7 @@ export const workspaceServices = {
       .lean();
 
     if (!workspaces) {
-      throw new Error('No workspaces found');
+      throw new HttpError('No workspaces found', 404);
     }
     return workspaces;
   },
@@ -164,7 +165,7 @@ export const workspaceServices = {
       .select('members')
       .lean();
     if (!workspace) {
-      throw new Error('Workspace not found');
+      throw new HttpError('Workspace not found', 404);
     }
 
     return workspace;
@@ -184,7 +185,7 @@ export const workspaceServices = {
       .lean<{ projects: IProjectSchema[] }>();
 
     if (!workspace) {
-      throw new Error('Workspace not found');
+      throw new HttpError('Workspace not found', 404);
     }
     return workspace;
   },
@@ -196,7 +197,7 @@ export const workspaceServices = {
   ) => {
     const user = await UserModel.findOne({ email });
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpError('User not found', 404);
     }
 
     const workspace = await WorkspaceModel.findOne({
@@ -206,13 +207,13 @@ export const workspaceServices = {
     });
 
     if (!workspace) {
-      throw new Error('Workspace not found or user already a member');
+      throw new HttpError('Workspace not found or user already a member', 409);
     }
 
     const existingInvitation = await invitationServices.getInvitationByEmail(email, workspaceId);
 
     if (existingInvitation) {
-      throw new Error('Invitation already sent');
+      throw new HttpError('Invitation already sent', 409);
     }
 
     const invitation = await invitationServices.createNewInvitation(
