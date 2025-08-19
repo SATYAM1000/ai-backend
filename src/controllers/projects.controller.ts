@@ -11,6 +11,7 @@ export const ProjectsController = {
     if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
       return utils.httpError(next, new Error('Invalid project ID'), req, 400);
     }
+    
 
     const project = await projectServices.getProjectById(userId, projectId);
     if (!project) {
@@ -18,7 +19,7 @@ export const ProjectsController = {
     }
     return utils.httpResponse(req, res, 200, 'Project fetched successfully', project);
   }),
-  
+
   createNewProjectInWorkspace: utils.asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const { body } = req as { body: CreateNewProjectBody };
