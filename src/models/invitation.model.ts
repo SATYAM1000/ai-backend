@@ -1,4 +1,5 @@
 import mongoose, { Document } from 'mongoose';
+import { IWorkspaceMemberRole } from './workspace.model';
 
 export enum EInvitationStatus {
   PENDING = 'pending',
@@ -12,76 +13,60 @@ export interface IInvitation extends Document {
   workspaceId: mongoose.Types.ObjectId;
   projectId?: mongoose.Types.ObjectId;
   invitedBy: mongoose.Types.ObjectId;
-  role: string;
+  role: IWorkspaceMemberRole;
   status: EInvitationStatus;
-  acceptedAt?: Date;
-  cancelledAt?: Date;
   token: string;
   resentCount: number;
+  lastSentAt?: Date;
   expiresAt: Date;
+  acceptedAt?: Date;
+  cancelledAt?: Date;
+  respondedAt?: Date;
+  responseIp?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const invitationSchema = new mongoose.Schema<IInvitation>(
   {
-    email: {
-      type: String,
-      required: true,
-      lowercase: true,
-      trim: true,
-    },
-    workspaceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Workspace',
-      required: true,
-    },
-    projectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Project',
-    },
-    invitedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
+    email: { type: String, required: true, lowercase: true, trim: true },
+    workspaceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Workspace', required: true },
+    projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
+    invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: Object.values(IWorkspaceMemberRole),
       required: true,
     },
+
     status: {
       type: String,
       enum: Object.values(EInvitationStatus),
       default: EInvitationStatus.PENDING,
     },
-    acceptedAt: {
-      type: Date,
-    },
-    cancelledAt: {
-      type: Date,
-    },
-    token: {
-      type: String,
-      required: true,
-    },
-    resentCount: {
-      type: Number,
-      default: 0,
-    },
-    expiresAt: {
-      type: Date,
-      required: true,
-    },
+
+    token: { type: String, required: true, unique: true, select: false }, // hashed in practice
+    resentCount: { type: Number, default: 0 },
+    lastSentAt: { type: Date },
+
+    expiresAt: { type: Date, required: true },
+
+    acceptedAt: { type: Date },
+    cancelledAt: { type: Date },
+    respondedAt: { type: Date },
+    responseIp: { type: String },
   },
   { timestamps: true, versionKey: false },
 );
 
-invitationSchema.index({ email: 1, workspaceId: 1, projectId: 1, status: 1 });
-invitationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+// Indexes
 invitationSchema.index(
-  { email: 1, workspaceId: 1, projectId: 1, status: 1 },
+  { email: 1, workspaceId: 1, projectId: 1 },
   { unique: true, partialFilterExpression: { status: EInvitationStatus.PENDING } },
 );
+
+invitationSchema.index({ token: 1 }, { unique: true });
+invitationSchema.index({ expiresAt: 1 });
 
 export const InvitationModel = mongoose.model<IInvitation>('Invitation', invitationSchema);

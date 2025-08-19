@@ -29,6 +29,7 @@ export interface IAuthenticatedRequest {
   _id: mongoose.Types.ObjectId;
   email: string;
   role: string;
+  name: string;
 }
 
 declare global {

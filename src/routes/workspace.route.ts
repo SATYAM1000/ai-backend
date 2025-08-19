@@ -42,3 +42,10 @@ workspaceRouter.get(
   middlewares.authHandler,
   workspaceControllers.getWorkspaceProjects,
 );
+
+workspaceRouter.post(
+  '/:id/invites',
+  middlewares.validationHandler(validationSchema.workspace.inviteMemberToWorkspaceSchema),
+  middlewares.authHandler,
+  workspaceControllers.inviteMemberToWorkspace,
+);

@@ -13,7 +13,7 @@ const createWorkspaceSchema = z
   })
   .strict();
 
-export const updateWorkspaceSchema = z
+const updateWorkspaceSchema = z
   .object({
     name: z.string().min(3, { message: 'Name must be at least 3 characters' }).optional(),
     description: z
@@ -26,10 +26,19 @@ export const updateWorkspaceSchema = z
   })
   .strict();
 
+const inviteMemberToWorkspaceSchema = z
+  .object({
+    email: z.string().email('Invalid email address'),
+    role: z.enum(['admin', 'viewer', 'editor', 'guest']).default('viewer'),
+  })
+  .strict();
+
 export const workspaceValidationSchemas = {
   createWorkspaceSchema: createWorkspaceSchema,
   updateWorkspaceSchema: updateWorkspaceSchema,
+  inviteMemberToWorkspaceSchema: inviteMemberToWorkspaceSchema,
 };
 
 export type CreateNewWorkspaceBody = z.infer<typeof createWorkspaceSchema>;
 export type UpdateWorkspaceBody = z.infer<typeof updateWorkspaceSchema>;
+export type InviteMemberToWorkspaceBody = z.infer<typeof inviteMemberToWorkspaceSchema>;

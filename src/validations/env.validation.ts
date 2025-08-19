@@ -12,4 +12,6 @@ export const envSchema = z.object({
   REDIS_PORT: z.string().min(1, 'REDIS_PORT is required in env file'),
   REDIS_USERNAME: z.string().min(1, 'REDIS_USERNAME is required in env file'),
   REDIS_PASSWORD: z.string().min(1, 'REDIS_PASSWORD is required in env file'),
+  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required in env file'),
+  FROM_EMAIL_ADDRESS: z.string().min(1, 'FROM_EMAIL_ADDRESS is required in env file'),
 });

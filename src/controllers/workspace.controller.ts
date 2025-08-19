@@ -1,6 +1,10 @@
-import { workspaceServices } from '@/services';
+import { emailServices, workspaceServices } from '@/services';
 import { utils } from '@/utils';
-import { CreateNewWorkspaceBody, UpdateWorkspaceBody } from '@/validations';
+import {
+  CreateNewWorkspaceBody,
+  InviteMemberToWorkspaceBody,
+  UpdateWorkspaceBody,
+} from '@/validations';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
@@ -69,7 +73,6 @@ export const workspaceControllers = {
     const members = await workspaceServices.getWorkspaceMembers(workspaceId);
     return utils.httpResponse(req, res, 200, 'Members fetched successfully', members);
   }),
-  //TODO: get workspace projects
   getWorkspaceProjects: utils.asyncHandler(async (req: Request, res: Response, next) => {
     const workspaceId = req.params.id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
@@ -78,11 +81,17 @@ export const workspaceControllers = {
     const projects = await workspaceServices.getWorkspaceProjects(workspaceId);
     return utils.httpResponse(req, res, 200, 'Projects fetched successfully', projects);
   }),
+  inviteMemberToWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    const workspaceId = req.params.id;
+    if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+    }
+    const { email, role } = req.body as InviteMemberToWorkspaceBody;
+    const result = await workspaceServices.inviteMemberToWorkspace(workspaceId, email, role, req);
 
-  //TODO: add member
-  addMember: utils.asyncHandler(async (req: Request, res: Response, next) => {
-    return true;
+    return utils.httpResponse(req, res, 200, 'Member invited successfully', result);
   }),
+
   // TODO: update member role:
   updateMemberRole: utils.asyncHandler(async (req: Request, res: Response, next) => {
     return true;
@@ -95,10 +104,7 @@ export const workspaceControllers = {
   transferOwnership: utils.asyncHandler(async (req: Request, res: Response, next) => {
     return true;
   }),
-  //TODO: invite member to a workspace
-  inviteMember: utils.asyncHandler(async (req: Request, res: Response, next) => {
-    return true;
-  }),
+
   //TODO: get invites
   getInvites: utils.asyncHandler(async (req: Request, res: Response, next) => {
     return true;

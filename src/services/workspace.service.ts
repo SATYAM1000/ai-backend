@@ -1,11 +1,13 @@
+import { Request } from 'express';
 import mongoose from 'mongoose';
-import { projectServices } from '@/services';
+import { emailServices, invitationServices, projectServices } from '@/services';
 import {
   EProjectStatus,
   EWorkspaceStatus,
   IBillingPlanType,
   IProjectSchema,
   ProjectModel,
+  UserModel,
   WorkspaceModel,
 } from '@/models';
 import { CreateNewWorkspaceBody, UpdateWorkspaceBody } from '@/validations';
@@ -184,5 +186,63 @@ export const workspaceServices = {
       throw new Error('Workspace not found');
     }
     return workspace;
+  },
+  inviteMemberToWorkspace: async (
+    workspaceId: string,
+    email: string,
+    role: string,
+    req: Request,
+  ) => {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const workspace = await WorkspaceModel.findOne({
+      _id: new mongoose.Types.ObjectId(workspaceId),
+      status: 'active',
+      members: { $not: { $elemMatch: { userId: user._id } } },
+    });
+
+    if (!workspace) {
+      throw new Error('Workspace not found or user already a member');
+    }
+
+    const existingInvitation = await invitationServices.getInvitationByEmail(email, workspaceId);
+
+    if (existingInvitation) {
+      throw new Error('Invitation already sent');
+    }
+
+    const invitation = await invitationServices.createNewInvitation(
+      email,
+      workspaceId,
+      role,
+      req.user!._id,
+    );
+
+    const inviteLink = `https://yourapp.com/invites/accept/${invitation.token}`;
+
+    const templeteVariables = {
+      workspaceName: workspace.name,
+      inviterName: req.user!.name,
+      inviterEmail: req.user!.email,
+      role,
+      inviteLink,
+      expiresIn: '7 days',
+      appName: 'ProtoAI',
+      nowDate: new Date().toLocaleDateString(),
+      companyAddress: '123 Startup Street, SF',
+      supportUrl: 'https://yourapp.com/support',
+      mirrorLink: 'https://yourapp.com/invites/view?id=123',
+    };
+
+    const result = await emailServices.sendWorkspaceInvitationEmail(
+      email,
+      workspace.name,
+      templeteVariables,
+    );
+
+    return result;
   },
 };
