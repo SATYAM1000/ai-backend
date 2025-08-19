@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
-import { HttpError, utils } from '@/utils';
+import { Request, Response } from 'express';
+import { HttpError, HttpResponse, utils } from '@/utils';
 import { authService } from '@/services';
 import { z } from 'zod';
 import { validationSchema } from '@/validations';
@@ -9,9 +9,9 @@ export const authControllers = {
   upsertGoogleUser: utils.asyncHandler(async (req: Request, res: Response) => {
     const { body } = req as { body: UpsertGoogleUserBody };
     const result = await authService.upsertGoogleUser(body);
-    return utils.httpResponse(req, res, 200, 'success', result);
+    return HttpResponse(req, res, 200, 'success', result);
   }),
-  getUserInfo: utils.asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  getUserInfo: utils.asyncHandler(async (req: Request, res: Response) => {
     const userId = req.params.id as string | undefined;
 
     if (!userId) {
@@ -24,6 +24,6 @@ export const authControllers = {
       throw new HttpError('User not found', 404);
     }
 
-    return utils.httpResponse(req, res, 200, 'User fetched successfully', user);
+    return HttpResponse(req, res, 200, 'User fetched successfully', user);
   }),
 };
