@@ -3,7 +3,7 @@ import { validationSchema } from '@/validations';
 import { z } from 'zod';
 import { workspaceServices } from '@/services';
 import mongoose from 'mongoose';
-import { HttpError } from '@/utils';
+import { asyncHandler, HttpError } from '@/utils';
 
 type UpsertGoogleUserBody = z.infer<typeof validationSchema.auth.upsertGoogleUserSchema>;
 
@@ -17,7 +17,7 @@ type UserResponse = {
 };
 
 export const authService = {
-  upsertGoogleUser: async (payload: UpsertGoogleUserBody): Promise<UserResponse> => {
+  upsertGoogleUser: asyncHandler(async (payload: UpsertGoogleUserBody): Promise<UserResponse> => {
     const session = await mongoose.startSession();
 
     try {
@@ -96,9 +96,8 @@ export const authService = {
     } finally {
       session.endSession();
     }
-  },
-
-  getUserInfoById: async (id: string) => {
+  }),
+  getUserInfoById: asyncHandler(async (id: string) => {
     return UserModel.findById(id).select('-workspaces -googleId -isBlocked -lastLoginAt');
-  },
+  }),
 };
