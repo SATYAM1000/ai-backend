@@ -128,18 +128,20 @@ export const workspaceServices = {
 
     return deletedWorkspace;
   },
-  getWorkspaceInfoById: async (workspaceId: string, ownerId: mongoose.Types.ObjectId) => {
+  getWorkspaceInfoById: async (workspaceId: string, userId: mongoose.Types.ObjectId) => {
     const workspace = await WorkspaceModel.findOne({
-      _id: workspaceId,
-      ownerId: new mongoose.Types.ObjectId(ownerId),
+      _id: new mongoose.Types.ObjectId(workspaceId),
+      $or: [{ ownerId: userId }, { 'members.userId': userId }],
       status: EWorkspaceStatus.ACTIVE,
     });
 
     if (!workspace) {
-      throw new HttpError('Workspace not found', 404);
+      throw new HttpError('Workspace not found or access denied', 404);
     }
+
     return workspace;
   },
+
   getUserWorkspaces: async (userId: mongoose.Types.ObjectId) => {
     const workspaces = await WorkspaceModel.find({
       $or: [{ ownerId: userId }, { 'members.userId': userId }],

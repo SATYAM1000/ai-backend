@@ -3,6 +3,7 @@ import { globalErrorMiddleware } from '@/middlewares/global-error.middleware';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { routeNotFoundMiddleware } from '@/middlewares/not-found.middleware';
 import { validateMiddleware } from '@/middlewares/validation.middleware';
+import { workspacePermissionHandler } from '@/middlewares/workspace.middleware';
 
 export const middlewares = {
   requestHandler: requestLoggerMiddleware,
@@ -10,4 +11,5 @@ export const middlewares = {
   errorHandler: globalErrorMiddleware,
   notFoundHandler: routeNotFoundMiddleware,
   validationHandler: validateMiddleware,
+  workspacePermissionHandler: workspacePermissionHandler,
 };

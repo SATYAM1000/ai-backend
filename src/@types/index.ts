@@ -37,6 +37,23 @@ export interface IAuthenticatedRequest {
   name: string;
 }
 
+export enum EWorkspacePermissions {
+  TRANSFER_OWNERSHIP = 'transfer_ownership',
+  MANAGE_WORKSPACE = 'manage_workspace',
+  INVITE_MEMBERS = 'invite_members',
+  VIEW_WORKSPACE = 'view_workspace',
+  CHANGE_ROLES = 'change_roles',
+  DELETE_WORKSPACE = 'delete_workspace',
+  MANAGE_API_KEYS = 'manage_api_keys',
+  CREATE_PROJECT = 'create_project',
+  EDIT_PROJECT = 'edit_project',
+  VIEW_PROJECT = 'view_project',
+  UPDATE_PROJECT_INFO = 'update_project_info',
+  DELETE_PROJECT = 'delete_project',
+  SHARE_PROJECT = 'share_project',
+  ACCESS_BILLING = 'access_billing',
+}
+
 declare global {
   namespace Express {
     interface Request {
