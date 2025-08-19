@@ -69,6 +69,15 @@ export const workspaceControllers = {
     const members = await workspaceServices.getWorkspaceMembers(workspaceId);
     return utils.httpResponse(req, res, 200, 'Members fetched successfully', members);
   }),
+  //TODO: get workspace projects
+  getWorkspaceProjects: utils.asyncHandler(async (req: Request, res: Response, next) => {
+    const workspaceId = req.params.id;
+    if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+    }
+    const projects = await workspaceServices.getWorkspaceProjects(workspaceId);
+    return utils.httpResponse(req, res, 200, 'Projects fetched successfully', projects);
+  }),
 
   //TODO: add member
   addMember: utils.asyncHandler(async (req: Request, res: Response, next) => {
@@ -107,10 +116,7 @@ export const workspaceControllers = {
   leaveWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
     return true;
   }),
-  //TODO: get workspace projects
-  getWorkspaceProjects: utils.asyncHandler(async (req: Request, res: Response, next) => {
-    return true;
-  }),
+
   //TODO: add api keys
   addApiKeys: utils.asyncHandler(async (req: Request, res: Response, next) => {
     return true;

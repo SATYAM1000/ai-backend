@@ -4,6 +4,7 @@ import {
   EProjectStatus,
   EWorkspaceStatus,
   IBillingPlanType,
+  IProjectSchema,
   ProjectModel,
   WorkspaceModel,
 } from '@/models';
@@ -135,7 +136,6 @@ export const workspaceServices = {
     }
     return workspace;
   },
-
   getUserWorkspaces: async (userId: mongoose.Types.ObjectId) => {
     const workspaces = await WorkspaceModel.find({
       $or: [{ ownerId: userId }, { 'members.userId': userId }],
@@ -165,5 +165,25 @@ export const workspaceServices = {
     }
 
     return workspace;
+  },
+  getWorkspaceProjects: async (workspaceId: string) => {
+    const workspace = await WorkspaceModel.findOne({
+      _id: workspaceId,
+      status: EWorkspaceStatus.ACTIVE,
+    })
+      .populate({
+        path: 'projects',
+        match: { status: { $ne: EProjectStatus.ARCHIVED } },
+        select: 'name description thumbnailUrl status visibility updatedAt',
+        options: { sort: { updatedAt: -1 } },
+      })
+      .select('projects')
+      .lean<{ projects: IProjectSchema[] }>();
+
+    if (!workspace) {
+      throw new Error('Workspace not found');
+    }
+
+    return workspace.projects;
   },
 };
