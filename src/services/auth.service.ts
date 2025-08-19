@@ -3,6 +3,7 @@ import { validationSchema } from '@/validations';
 import { z } from 'zod';
 import { workspaceServices } from '@/services';
 import mongoose from 'mongoose';
+import { HttpError } from '@/utils';
 
 type UpsertGoogleUserBody = z.infer<typeof validationSchema.auth.upsertGoogleUserSchema>;
 
@@ -46,8 +47,12 @@ export const authService = {
         },
       );
 
-      if (!user) throw new Error('Failed to create or update user');
-      if (user.isBlocked) throw new Error('User is blocked');
+      if (!user) {
+        throw new HttpError('Failed to create or update user', 500);
+      }
+      if (user.isBlocked) {
+        throw new HttpError('User is blocked', 403);
+      }
 
       if (user.defaultWorkspaceId) {
         await session.commitTransaction();
@@ -66,7 +71,9 @@ export const authService = {
         session,
       );
 
-      if (!defaultWorkspace) throw new Error('Failed to create default workspace');
+      if (!defaultWorkspace) {
+        throw new HttpError('Failed to create default workspace', 500);
+      }
 
       user.defaultWorkspaceId = defaultWorkspace._id as mongoose.Types.ObjectId;
       user.workspaces = [defaultWorkspace._id as mongoose.Types.ObjectId];

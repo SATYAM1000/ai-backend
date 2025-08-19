@@ -40,6 +40,7 @@ export const workspaceControllers = {
     return HttpResponse(req, res, 200, 'Workspace updated successfully', result);
   }),
   deleteWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
+    console.log('req.params.id------------------------> ', req.params.id);
     const workspaceId = req.params.id;
     const ownerId = req.user!._id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {

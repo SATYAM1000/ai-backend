@@ -31,7 +31,6 @@ export const workspaceServices = {
       isDefault: true,
     });
 
-    // create default project inside same session
     const defaultProject = await projectServices.createDefaultProject(
       workspace._id as mongoose.Types.ObjectId,
       userId,

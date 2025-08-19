@@ -1,4 +1,5 @@
 import { EProjectStatus, EProjectVisibility, ProjectModel } from '@/models';
+import { HttpError } from '@/utils';
 import { CreateNewProjectBody } from '@/validations';
 import mongoose from 'mongoose';
 
@@ -62,7 +63,7 @@ export const projectServices = {
     });
 
     if (!project) {
-      throw new Error('Project not found or access denied');
+      throw new HttpError('You do not have permission to delete this project', 403);
     }
     return await ProjectModel.findByIdAndUpdate(
       projectId,

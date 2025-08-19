@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { EWorkspacePermissions } from '@/@types';
 import { IWorkspaceMemberRole } from '@/models';
 import { workspaceServices } from '@/services';
-import { HttpError } from '@/utils';
+import { HttpError, utils } from '@/utils';
 
 const ownerPerms: EWorkspacePermissions[] = [
   EWorkspacePermissions.TRANSFER_OWNERSHIP,
@@ -23,7 +23,7 @@ const ownerPerms: EWorkspacePermissions[] = [
 
 const adminPerms: EWorkspacePermissions[] = ownerPerms.filter(
   (p) =>
-    p !== EWorkspacePermissions.TRANSFER_OWNERSHIP && p !== EWorkspacePermissions.DELETE_WORKSPACE, 
+    p !== EWorkspacePermissions.TRANSFER_OWNERSHIP && p !== EWorkspacePermissions.DELETE_WORKSPACE,
 );
 
 const editorPerms: EWorkspacePermissions[] = [
@@ -49,42 +49,37 @@ export const workspacePermissionHandler = (
 ) => {
   const required = Array.isArray(permissions) ? permissions : [permissions];
 
-  return async (req: Request, _res: Response, next: NextFunction) => {
-    try {
-      const userId = req.user!._id;
-      const workspaceId = req.params.id;
+  return utils.asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
+    const userId = req.user!._id;
+    const workspaceId = req.params.id;
 
-      if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
-        throw new HttpError('Invalid workspace ID', 400);
-      }
-
-      const workspace = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
-      if (!workspace) {
-        throw new HttpError('Workspace not found', 404);
-      }
-
-      let role: IWorkspaceMemberRole | null = null;
-      if (workspace.ownerId.toString() === userId.toString()) {
-        role = IWorkspaceMemberRole.OWNER;
-      } else {
-        const member = workspace.members.find((m) => m.userId.toString() === userId.toString());
-        role = member?.role || null;
-      }
-
-      if (!role) {
-        throw new HttpError('You are not a member of this workspace', 403);
-      }
-
-      const hasPermission = required.some((p) => WorkspaceRolePermissions[role].includes(p));
-
-      if (!hasPermission) {
-        throw new HttpError('You do not have permission to perform this action', 403);
-      }
-
-      next();
-    } catch (error) {
-      const errMessage = error instanceof Error ? error.message : 'Something went wrong';
-      throw new HttpError(errMessage, error instanceof HttpError ? error.statusCode : 500);
+    if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
+      throw new HttpError('Invalid workspace ID', 400);
     }
-  };
+
+    const workspace = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
+    if (!workspace) {
+      throw new HttpError('Workspace not found', 404);
+    }
+
+    let role: IWorkspaceMemberRole | null = null;
+    if (workspace.ownerId.toString() === userId.toString()) {
+      role = IWorkspaceMemberRole.OWNER;
+    } else {
+      const member = workspace.members.find((m) => m.userId.toString() === userId.toString());
+      role = member?.role || null;
+    }
+
+    if (!role) {
+      throw new HttpError('You are not a member of this workspace', 403);
+    }
+
+    const hasPermission = required.some((p) => WorkspaceRolePermissions[role].includes(p));
+
+    if (!hasPermission) {
+      throw new HttpError('You do not have permission to perform this action', 403);
+    }
+
+    next();
+  });
 };
