@@ -183,7 +183,6 @@ export const workspaceServices = {
     if (!workspace) {
       throw new Error('Workspace not found');
     }
-
-    return workspace.projects;
+    return workspace;
   },
 };

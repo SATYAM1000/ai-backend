@@ -36,3 +36,9 @@ workspaceRouter.get(
   middlewares.authHandler,
   workspaceControllers.getWorkspaceMembers,
 );
+
+workspaceRouter.get(
+  '/:id/projects',
+  middlewares.authHandler,
+  workspaceControllers.getWorkspaceProjects,
+);
