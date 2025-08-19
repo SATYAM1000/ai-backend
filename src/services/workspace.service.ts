@@ -142,9 +142,28 @@ export const workspaceServices = {
       status: EWorkspaceStatus.ACTIVE,
     })
       .populate('ownerId', 'name avatarUrl')
+      .populate('members.userId', 'name avatarUrl')
       .select('name description logo ownerId status isDefault createdAt updatedAt')
       .sort({ updatedAt: -1 })
       .lean();
+
+    if (!workspaces) {
+      throw new Error('No workspaces found');
+    }
     return workspaces;
+  },
+  getWorkspaceMembers: async (workspaceId: string) => {
+    const workspace = await WorkspaceModel.findOne({
+      _id: workspaceId,
+      status: EWorkspaceStatus.ACTIVE,
+    })
+      .populate('members.userId', 'name avatarUrl')
+      .select('members')
+      .lean();
+    if (!workspace) {
+      throw new Error('Workspace not found');
+    }
+
+    return workspace;
   },
 };

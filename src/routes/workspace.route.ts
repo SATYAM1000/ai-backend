@@ -30,3 +30,9 @@ workspaceRouter.delete('/:id', middlewares.authHandler, workspaceControllers.del
 workspaceRouter.get('/', middlewares.authHandler, workspaceControllers.getUserWorkspaces);
 
 workspaceRouter.get('/:id', middlewares.authHandler, workspaceControllers.getWorkspaceInfoById);
+
+workspaceRouter.get(
+  '/:id/members',
+  middlewares.authHandler,
+  workspaceControllers.getWorkspaceMembers,
+);
