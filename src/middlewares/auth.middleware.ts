@@ -3,8 +3,7 @@ import { decode } from 'next-auth/jwt';
 import mongoose from 'mongoose';
 import { env } from '@/config';
 import { authService } from '@/services';
-import { utils } from '@/utils';
-import { httpError } from '@/utils/http-error.util';
+import { asyncHandler, HttpError } from '@/utils';
 
 interface IJWTSession {
   sub: string;
@@ -13,11 +12,10 @@ interface IJWTSession {
   name?: string;
 }
 
-export const authMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
-  const unauthorized = (message = 'Unauthorized access') =>
-    httpError(next, new Error(message), req, 401);
+export const authMiddleware = asyncHandler(
+  async (req: Request, _res: Response, next: NextFunction) => {
+    const unauthorized = (message = 'Unauthorized access') => new HttpError(message, 401);
 
-  try {
     const token =
       req.cookies['authjs.session-token'] || req.cookies['__Secure-authjs.session-token'];
 
@@ -41,7 +39,5 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
       name: user.name,
     };
     return next();
-  } catch (error) {
-    return utils.httpError(next, error, req);
-  }
-};
+  },
+);

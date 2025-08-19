@@ -13,4 +13,4 @@ export const utils = {
   redis: redisUtils,
 };
 
-export { HttpError, HttpResponse };
+export { HttpError, HttpResponse, asyncHandler };

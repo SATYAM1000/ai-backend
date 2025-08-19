@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
-import { HttpError, HttpResponse, utils } from '@/utils';
+import { asyncHandler, HttpError, HttpResponse } from '@/utils';
 import { authService } from '@/services';
 import { z } from 'zod';
 import { validationSchema } from '@/validations';
 type UpsertGoogleUserBody = z.infer<typeof validationSchema.auth.upsertGoogleUserSchema>;
 
 export const authControllers = {
-  upsertGoogleUser: utils.asyncHandler(async (req: Request, res: Response) => {
+  upsertGoogleUser: asyncHandler(async (req: Request, res: Response) => {
     const { body } = req as { body: UpsertGoogleUserBody };
     const result = await authService.upsertGoogleUser(body);
     return HttpResponse(req, res, 200, 'success', result);
   }),
-  getUserInfo: utils.asyncHandler(async (req: Request, res: Response) => {
+  getUserInfo: asyncHandler(async (req: Request, res: Response) => {
     const userId = req.params.id as string | undefined;
 
     if (!userId) {

@@ -1,11 +1,11 @@
 import { projectServices, workspaceServices } from '@/services';
-import { HttpError, HttpResponse, utils } from '@/utils';
+import { asyncHandler, HttpError, HttpResponse } from '@/utils';
 import { CreateNewProjectBody } from '@/validations';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
 export const ProjectsController = {
-  getProjectInfo: utils.asyncHandler(async (req: Request, res: Response) => {
+  getProjectInfo: asyncHandler(async (req: Request, res: Response) => {
     const projectId = req.params.id as string;
     const userId = req.user!._id;
     if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
@@ -19,7 +19,7 @@ export const ProjectsController = {
     return HttpResponse(req, res, 200, 'Project fetched successfully', project);
   }),
 
-  createNewProjectInWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
+  createNewProjectInWorkspace: asyncHandler(async (req: Request, res: Response) => {
     const { body } = req as { body: CreateNewProjectBody };
     const { workspaceId } = body;
     const userId = req.user!._id;
@@ -35,7 +35,7 @@ export const ProjectsController = {
 
     return HttpResponse(req, res, 201, 'Project created successfully', project);
   }),
-  deleteProjectFromWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
+  deleteProjectFromWorkspace: asyncHandler(async (req: Request, res: Response) => {
     const projectId = req.params.id as string;
     const userId = req.user!._id;
     if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
