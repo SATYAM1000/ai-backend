@@ -4,277 +4,154 @@
     <meta charset="utf-8" />
     <title>Invitation to {{workspaceName}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Preheader text: appears in inbox preview -->
     <meta
       name="x-preheader"
-      content="You’ve been invited by {{inviterName}} to collaborate in {{workspaceName}}."
+      content="{{inviterName}} invited you to join {{workspaceName}} on {{appName}}."
     />
-    <style>
-      /* Some clients support style in head; keep critical styles inline below too */
-      @media (max-width: 600px) {
-        .container {
-          width: 100% !important;
-        }
-        .p-sm {
-          padding: 16px !important;
-        }
-        .text-center-sm {
-          text-align: center !important;
-        }
-        .stack-sm {
-          display: block !important;
-          width: 100% !important;
-        }
-      }
-    </style>
   </head>
-  <body style="margin: 0; padding: 0; background-color: #f6f7fb">
-    <!-- Hidden preheader (fallback) -->
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+      font-family: Arial, Helvetica, sans-serif;
+    "
+  >
+    <!-- Preheader (hidden in inbox but good for previews) -->
     <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; mso-hide: all">
-      You’ve been invited by {{inviterName}} to collaborate in {{workspaceName}} on {{appName}}.
-      This link expires in {{expiresIn}}.
+      {{inviterName}} has invited you to collaborate on {{workspaceName}}.
     </div>
 
-    <table
-      role="presentation"
-      cellpadding="0"
-      cellspacing="0"
-      border="0"
-      width="100%"
-      style="background-color: #f6f7fb"
-    >
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
       <tr>
-        <td align="center" style="padding: 32px 16px">
+        <td align="center" style="padding: 40px 16px">
           <table
-            class="container"
             role="presentation"
             cellpadding="0"
             cellspacing="0"
             border="0"
-            width="600"
+            width="100%"
             style="
-              width: 600px;
-              max-width: 600px;
+              max-width: 560px;
               background: #ffffff;
               border-radius: 12px;
-              overflow: hidden;
-              box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
+              padding: 40px;
+              box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
             "
           >
-            <!-- Header -->
+            <!-- Logo / Header -->
             <tr>
-              <td align="left" style="background: #111827; padding: 20px 24px">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td
-                      class="text-center-sm"
-                      style="
-                        font-family: Arial, Helvetica, sans-serif;
-                        font-size: 18px;
-                        color: #ffffff;
-                        font-weight: 700;
-                      "
-                    >
-                      {{appName}}
-                    </td>
-                    <td
-                      align="right"
-                      class="text-center-sm"
-                      style="
-                        font-family: Arial, Helvetica, sans-serif;
-                        font-size: 12px;
-                        color: #9ca3af;
-                      "
-                    >
-                      Invitation • {{nowDate}}
-                    </td>
-                  </tr>
-                </table>
+              <td align="center" style="padding-bottom: 24px">
+                <span style="font-size: 20px; font-weight: 600; color: #111827">{{appName}}</span>
               </td>
             </tr>
 
-            <!-- Hero -->
+            <!-- Body -->
             <tr>
               <td
-                class="p-sm"
-                style="padding: 28px 32px 12px 32px; font-family: Arial, Helvetica, sans-serif"
+                style="
+                  color: #111827;
+                  font-size: 18px;
+                  font-weight: 600;
+                  padding-bottom: 12px;
+                  text-align: center;
+                "
               >
-                <h1
+                You’ve been invited to join <span style="color: #4f46e5">{{workspaceName}}</span>
+              </td>
+            </tr>
+
+            <tr>
+              <td
+                style="
+                  color: #374151;
+                  font-size: 14px;
+                  line-height: 20px;
+                  padding-bottom: 24px;
+                  text-align: center;
+                "
+              >
+                <strong>{{inviterName}}</strong> ({{inviterEmail}}) has invited you as a
+                <strong>{{role}}</strong> in the workspace <strong>{{workspaceName}}</strong>.
+              </td>
+            </tr>
+
+            <!-- CTA Button -->
+            <tr>
+              <td align="center" style="padding-bottom: 24px">
+                <a
+                  href="{{inviteLink}}"
                   style="
-                    margin: 0 0 8px 0;
-                    font-size: 22px;
-                    line-height: 28px;
-                    color: #111827;
-                    font-weight: 700;
-                  "
-                >
-                  You’re invited to <span style="color: #4f46e5">{{workspaceName}}</span>
-                </h1>
-                <p
-                  style="
-                    margin: 0;
-                    margin-top: 8px;
+                    display: inline-block;
+                    padding: 12px 24px;
                     font-size: 14px;
-                    line-height: 20px;
-                    color: #374151;
+                    font-weight: 600;
+                    color: #ffffff;
+                    background: #4f46e5;
+                    border-radius: 8px;
+                    text-decoration: none;
                   "
                 >
-                  <strong>{{inviterName}}</strong> ({{inviterEmail}}) invited you to collaborate as
-                  <strong>{{role}}</strong> in the workspace <strong>{{workspaceName}}</strong>.
-                </p>
+                  Accept Invitation
+                </a>
               </td>
             </tr>
 
-            <!-- CTA -->
+            <!-- Secondary Info -->
             <tr>
               <td
-                class="p-sm"
-                style="padding: 4px 32px 8px 32px; font-family: Arial, Helvetica, sans-serif"
+                style="
+                  font-size: 12px;
+                  line-height: 18px;
+                  color: #6b7280;
+                  text-align: center;
+                  padding-bottom: 16px;
+                "
               >
-                <!-- Bulletproof button -->
-                <table
-                  role="presentation"
-                  cellpadding="0"
-                  cellspacing="0"
-                  border="0"
-                  align="left"
-                  class="stack-sm"
-                  style="margin-top: 16px"
-                >
-                  <tr>
-                    <td align="center" bgcolor="#4f46e5" style="border-radius: 8px">
-                      <a
-                        href="{{inviteLink}}"
-                        style="
-                          display: inline-block;
-                          padding: 12px 20px;
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 14px;
-                          line-height: 14px;
-                          color: #ffffff;
-                          text-decoration: none;
-                          border-radius: 8px;
-                          background: #4f46e5;
-                          font-weight: 700;
-                        "
-                        target="_blank"
-                      >
-                        Accept Invitation
-                      </a>
-                    </td>
-                  </tr>
-                </table>
-
-                <!-- Secondary text -->
-                <p style="margin: 16px 0 0 0; font-size: 12px; line-height: 18px; color: #6b7280">
-                  This invitation will expire in <strong>{{expiresIn}}</strong>. If the button
-                  doesn’t work, copy and paste this link into your browser:
-                </p>
-                <p
-                  style="
-                    word-break: break-all;
-                    font-size: 12px;
-                    line-height: 18px;
-                    color: #4f46e5;
-                    margin: 6px 0 0 0;
-                  "
-                >
-                  {{inviteLink}}
-                </p>
+                This invitation expires in <strong>{{expiresIn}}</strong>. If the button doesn’t
+                work, copy this link:
               </td>
             </tr>
-
-            <!-- Divider -->
-            <tr>
-              <td style="padding: 16px 32px">
-                <hr style="border: none; border-top: 1px solid #e5e7eb; height: 1px; margin: 0" />
-              </td>
-            </tr>
-
-            <!-- Details -->
             <tr>
               <td
-                class="p-sm"
-                style="padding: 8px 32px 24px 32px; font-family: Arial, Helvetica, sans-serif"
+                style="
+                  word-break: break-all;
+                  font-size: 12px;
+                  line-height: 18px;
+                  color: #4f46e5;
+                  text-align: center;
+                  padding-bottom: 24px;
+                "
               >
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td valign="top" class="stack-sm" style="width: 50%; padding-right: 12px">
-                      <p
-                        style="
-                          margin: 0 0 6px 0;
-                          font-size: 12px;
-                          color: #6b7280;
-                          text-transform: uppercase;
-                          letter-spacing: 0.4px;
-                        "
-                      >
-                        Workspace
-                      </p>
-                      <p style="margin: 0; font-size: 14px; color: #111827">
-                        <strong>{{workspaceName}}</strong>
-                      </p>
-                    </td>
-                    <td valign="top" class="stack-sm" style="width: 50%; padding-left: 12px">
-                      <p
-                        style="
-                          margin: 0 0 6px 0;
-                          font-size: 12px;
-                          color: #6b7280;
-                          text-transform: uppercase;
-                          letter-spacing: 0.4px;
-                        "
-                      >
-                        Role
-                      </p>
-                      <p style="margin: 0; font-size: 14px; color: #111827">
-                        <strong>{{role}}</strong>
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-                <p style="margin: 16px 0 0 0; font-size: 12px; line-height: 18px; color: #6b7280">
-                  If you weren’t expecting this, you can safely ignore this email. The invite will
-                  automatically expire.
-                </p>
+                {{inviteLink}}
               </td>
             </tr>
 
             <!-- Footer -->
             <tr>
               <td
-                align="center"
                 style="
-                  background: #f9fafb;
-                  padding: 16px 24px;
-                  font-family: Arial, Helvetica, sans-serif;
+                  font-size: 11px;
+                  color: #9ca3af;
+                  text-align: center;
+                  padding-top: 16px;
+                  border-top: 1px solid #e5e7eb;
                 "
               >
-                <p style="margin: 0; font-size: 11px; color: #9ca3af">
-                  Sent by {{appName}} • {{companyAddress}}
-                </p>
-                <p style="margin: 6px 0 0 0; font-size: 11px; color: #9ca3af">
-                  Need help?
-                  <a
-                    href="{{supportUrl}}"
-                    style="color: #6b7280; text-decoration: underline"
-                    target="_blank"
-                    >Contact support</a
-                  >
-                </p>
+                Sent by {{appName}} • {{companyAddress}}<br />
+                Need help?
+                <a
+                  href="{{supportUrl}}"
+                  style="color: #6b7280; text-decoration: underline"
+                  target="_blank"
+                  >Contact support</a
+                >
               </td>
             </tr>
           </table>
 
-          <!-- View in browser (optional mirror link) -->
-          <p
-            style="
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 12px;
-              color: #9ca3af;
-              margin: 12px 0 0 0;
-            "
-          >
+          <!-- View in browser -->
+          <p style="font-size: 12px; color: #9ca3af; margin-top: 12px; text-align: center">
             Can’t see this email?
             <a href="{{mirrorLink}}" target="_blank" style="color: #6b7280">View in browser</a>
           </p>

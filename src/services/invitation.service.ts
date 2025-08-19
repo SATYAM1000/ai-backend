@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import { EInvitationStatus, InvitationModel } from '@/models';
 import mongoose from 'mongoose';
-import { env } from '@/config';
 
 export const invitationServices = {
   getInvitationByEmail: async (email: string, workspaceId: string) => {

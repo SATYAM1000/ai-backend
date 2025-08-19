@@ -11,6 +11,7 @@ import {
   WorkspaceModel,
 } from '@/models';
 import { CreateNewWorkspaceBody, UpdateWorkspaceBody } from '@/validations';
+import { getEmailQueue } from '@/queues/email.queue';
 
 export const workspaceServices = {
   createDefaultWorkspace: async (
@@ -236,6 +237,20 @@ export const workspaceServices = {
       supportUrl: 'https://yourapp.com/support',
       mirrorLink: 'https://yourapp.com/invites/view?id=123',
     };
+
+    await getEmailQueue().add(
+      'send-workspace-invite',
+      {
+        to: email,
+        workspaceName: workspace.name,
+        templateVariables: templeteVariables,
+      },
+      {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 60000 },
+        removeOnComplete: true,
+      },
+    );
 
     const result = await emailServices.sendWorkspaceInvitationEmail(
       email,

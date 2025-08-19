@@ -10,10 +10,9 @@ const redisClient = new Redis({
   db: 0,
   tls: env.NODE_ENV === 'production' ? {} : undefined,
   lazyConnect: true,
-  maxRetriesPerRequest: 3,
+  maxRetriesPerRequest: null, // Required for BullMQ compatibility
   connectTimeout: 10000,
   retryStrategy: (times) => Math.min(times * 50, 2000),
-
   reconnectOnError: (error) => {
     utils.logger('error', `❌ REDIS_ERROR: ${error.message}`);
     if (error.message.includes('READONLY')) return true;
