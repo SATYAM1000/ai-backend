@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { utils } from '@/utils';
+import { HttpError, utils } from '@/utils';
 import { authService } from '@/services';
 import { z } from 'zod';
 import { validationSchema } from '@/validations';
@@ -15,13 +15,13 @@ export const authControllers = {
     const userId = req.params.id as string | undefined;
 
     if (!userId) {
-      return utils.httpError(next, new Error('User ID is required'), req, 400);
+      throw new HttpError('User ID is required', 400);
     }
 
     const user = await authService.getUserInfoById(userId);
 
     if (!user) {
-      return utils.httpError(next, new Error('User not found'), req, 404);
+      throw new HttpError('User not found', 404);
     }
 
     return utils.httpResponse(req, res, 200, 'User fetched successfully', user);

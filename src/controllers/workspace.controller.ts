@@ -39,19 +39,19 @@ export const workspaceControllers = {
     const result = await workspaceServices.updateExistingWorkspace(workspaceId, ownerId, body);
     return utils.httpResponse(req, res, 200, 'Workspace updated successfully', result);
   }),
-  deleteWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
+  deleteWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
     const ownerId = req.user!._id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
-      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+      throw new HttpError('Invalid workspace ID', 400);
     }
     const result = await workspaceServices.deleteWorkspace(workspaceId, ownerId);
     return utils.httpResponse(req, res, 200, 'Workspace deleted successfully', result);
   }),
-  getWorkspaceInfoById: utils.asyncHandler(async (req: Request, res: Response, next) => {
+  getWorkspaceInfoById: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
-      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+      throw new HttpError('Invalid workspace ID', 400);
     }
     const userId = req.user!._id;
     const result = await workspaceServices.getWorkspaceInfoById(workspaceId, userId);
@@ -62,26 +62,26 @@ export const workspaceControllers = {
     const result = await workspaceServices.getUserWorkspaces(userId);
     return utils.httpResponse(req, res, 200, 'Workspaces fetched successfully', result);
   }),
-  getWorkspaceMembers: utils.asyncHandler(async (req: Request, res: Response, next) => {
+  getWorkspaceMembers: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
-      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+      throw new HttpError('Invalid workspace ID', 400);
     }
     const members = await workspaceServices.getWorkspaceMembers(workspaceId);
     return utils.httpResponse(req, res, 200, 'Members fetched successfully', members);
   }),
-  getWorkspaceProjects: utils.asyncHandler(async (req: Request, res: Response, next) => {
+  getWorkspaceProjects: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
-      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+      throw new HttpError('Invalid workspace ID', 400);
     }
     const projects = await workspaceServices.getWorkspaceProjects(workspaceId);
     return utils.httpResponse(req, res, 200, 'Projects fetched successfully', projects);
   }),
-  inviteMemberToWorkspace: utils.asyncHandler(async (req: Request, res: Response, next) => {
+  inviteMemberToWorkspace: utils.asyncHandler(async (req: Request, res: Response) => {
     const workspaceId = req.params.id;
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
-      return utils.httpError(next, new Error('Invalid workspace ID'), req, 400);
+      throw new HttpError('Invalid workspace ID', 400);
     }
     const { email, role } = req.body as InviteMemberToWorkspaceBody;
     const result = await workspaceServices.inviteMemberToWorkspace(workspaceId, email, role, req);
