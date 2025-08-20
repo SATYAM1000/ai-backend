@@ -2,6 +2,8 @@ import { Worker } from 'bullmq';
 import { redisClient } from '@/config';
 import { emailServices } from '@/services/email.service';
 import { utils } from '@/utils';
+import { BullMQJobsName } from '@/@types';
+import { invitationServices } from '@/services';
 
 let emailWorker: Worker | null = null;
 
@@ -9,13 +11,23 @@ export const initEmailWorker = () => {
   if (!emailWorker) {
     try {
       emailWorker = new Worker(
-        'email-queue',
+        BullMQJobsName.SEND_WORKSPACE_INVITATION_EMAIL,
         async (job) => {
-          if (job.name === 'send-workspace-invite') {
+          if (job.name === BullMQJobsName.SEND_WORKSPACE_INVITATION_EMAIL) {
             utils.logger('info', `📧 Sending workspace invite email for job ${job?.id}`);
-            const { to, workspaceName, variables } = job.data;
+            const { to, templateVariables, invitationId } = job.data;
             utils.logger('info', `📧 Sending workspace invite email for job ${job?.id} to ${to}`);
-            await emailServices.sendWorkspaceInvitationEmail(to, workspaceName, variables);
+            
+            try {
+              await emailServices.sendWorkspaceInvitationEmail(to, templateVariables.workspaceName, templateVariables);
+              // Only update status if email was sent successfully
+              await invitationServices.updateEmailSentStatus(invitationId);
+              utils.logger('info', `✅ Successfully sent invitation email to ${to}`);
+            } catch (error) {
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+              utils.logger('error', `❌ Failed to send invitation email to ${to}: ${errorMessage}`);
+              throw error; // Re-throw to trigger BullMQ retry mechanism
+            }
           }
         },
         { connection: redisClient },

@@ -194,49 +194,71 @@ export const workspaceServices = {
     role: string,
     invitedBy: mongoose.Types.ObjectId,
   ) => {
-    const workspace = await WorkspaceModel.findOne({
-      _id: new mongoose.Types.ObjectId(workspaceId),
-      status: 'active',
-    });
-    if (!workspace) throw new HttpError('Workspace not found', 404);
-    const existingUser = await UserModel.findOne({ email });
+    const session = await mongoose.startSession();
 
-    if (existingUser) {
-      const isAlreadyMember = workspace.members.some(
-        (m) => m.userId.toString() === (existingUser._id as string),
-      );
-      if (isAlreadyMember) throw new HttpError('User already a member', 409);
+    try {
+      return await session.withTransaction(async () => {
+        const workspace = await WorkspaceModel.findOne({
+          _id: new mongoose.Types.ObjectId(workspaceId),
+          status: 'active',
+        }).session(session);
+
+        if (!workspace) throw new HttpError('Workspace not found', 404);
+
+        const existingUser = await UserModel.findOne({ email }).session(session);
+
+        if (existingUser) {
+          const isAlreadyMember = workspace.members.some(
+            (m) => m.userId.toString() === (existingUser._id as string),
+          );
+          if (isAlreadyMember) throw new HttpError('User already a member', 409);
+        }
+
+        let existingInvitation = await invitationServices.getInvitationByEmail(email, workspaceId);
+
+        if (
+          existingInvitation &&
+          existingInvitation.status === EInvitationStatus.PENDING &&
+          existingInvitation.expiresAt > new Date()
+        ) {
+          existingInvitation.token = generateRandomToken();
+          existingInvitation.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+          await existingInvitation.save({ session });
+        } else {
+          existingInvitation = await invitationServices.createNewInvitation(
+            email,
+            workspaceId,
+            role,
+            invitedBy,
+            session,
+          );
+        }
+
+        if (!existingInvitation) {
+          throw new HttpError('Failed to create invitation', 500);
+        }
+
+        const inviter = await authService.getUserInfoById(invitedBy.toString());
+        if (!inviter) throw new HttpError('Inviter not found', 404);
+
+        try {
+          const invitationLink = await emailServices.addEmailToQueue(
+            email,
+            existingInvitation.token,
+            workspace.name,
+            inviter.name,
+            inviter.email,
+            role,
+            existingInvitation._id as string,
+          );
+
+          return { invitationId: existingInvitation._id, invitationLink: invitationLink };
+        } catch {
+          throw new HttpError('Failed to queue invitation email', 500);
+        }
+      });
+    } finally {
+      await session.endSession();
     }
-
-    let existingInvitation = await invitationServices.getInvitationByEmail(email, workspaceId);
-
-    if (
-      existingInvitation &&
-      existingInvitation.status === EInvitationStatus.PENDING &&
-      existingInvitation.expiresAt > new Date()
-    ) {
-      existingInvitation.token = generateRandomToken();
-      existingInvitation.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-      await existingInvitation.save();
-    } else {
-      existingInvitation = await invitationServices.createNewInvitation(
-        email,
-        workspaceId,
-        role,
-        invitedBy,
-      );
-    }
-
-    const inviter = await authService.getUserInfoById(invitedBy.toString());
-    const invitationLink = await emailServices.sendWorkspaceInvitationEmail(
-      existingInvitation.token,
-      workspace.name,
-      inviter!.name,
-      inviter!.email,
-      role,
-      existingInvitation._id as string,
-    );
-
-    return { invitationId: existingInvitation._id, invitationLink: invitationLink };
   },
 };

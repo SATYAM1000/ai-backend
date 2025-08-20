@@ -16,6 +16,7 @@ export const invitationServices = {
     workspaceId: string,
     role: string,
     invitedBy: mongoose.Types.ObjectId,
+    session?: mongoose.ClientSession,
   ) => {
     const payload = {
       email,
@@ -26,6 +27,16 @@ export const invitationServices = {
       status: EInvitationStatus.PENDING,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     };
-    return await InvitationModel.create(payload);
+    const result = await InvitationModel.create([payload], { session });
+    return result[0] || null;
+  },
+  updateEmailSentStatus: async (invitationId: string) => {
+    return await InvitationModel.updateOne(
+      { _id: new mongoose.Types.ObjectId(invitationId) },
+      { 
+        $set: { lastSentAt: new Date() },
+        $inc: { resentCount: 1 }
+      },
+    );
   },
 };
