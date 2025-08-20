@@ -12,6 +12,7 @@ export const initEmailQueue = () => {
         attempts: 3,
         backoff: { type: 'exponential', delay: 5000 },
         removeOnComplete: true,
+        removeOnFail: true,
       },
     });
   }
