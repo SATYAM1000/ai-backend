@@ -13,8 +13,8 @@
     style="
       margin: 0;
       padding: 0;
-      background-color: #f9fafb;
-      font-family: Arial, Helvetica, sans-serif;
+      background-color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     "
   >
     <!-- Preheader (hidden in inbox but good for previews) -->
@@ -24,7 +24,7 @@
 
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
       <tr>
-        <td align="center" style="padding: 40px 16px">
+        <td align="center" style="padding: 60px 20px">
           <table
             role="presentation"
             cellpadding="0"
@@ -32,17 +32,25 @@
             border="0"
             width="100%"
             style="
-              max-width: 560px;
+              max-width: 500px;
               background: #ffffff;
-              border-radius: 12px;
-              padding: 40px;
-              box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+              border: 2px solid #000000;
+              padding: 50px 40px;
             "
           >
             <!-- Logo / Header -->
             <tr>
-              <td align="center" style="padding-bottom: 24px">
-                <span style="font-size: 20px; font-weight: 600; color: #111827">{{appName}}</span>
+              <td align="center" style="padding-bottom: 40px">
+                <span
+                  style="
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #000000;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                  "
+                  >{{appName}}</span
+                >
               </td>
             </tr>
 
@@ -50,46 +58,50 @@
             <tr>
               <td
                 style="
-                  color: #111827;
-                  font-size: 18px;
+                  color: #000000;
+                  font-size: 20px;
                   font-weight: 600;
-                  padding-bottom: 12px;
+                  padding-bottom: 20px;
                   text-align: center;
+                  line-height: 1.4;
                 "
               >
-                You’ve been invited to join <span style="color: #4f46e5">{{workspaceName}}</span>
+                You've been invited to join<br />
+                <span style="font-weight: 700; text-decoration: underline">{{workspaceName}}</span>
               </td>
             </tr>
 
             <tr>
               <td
                 style="
-                  color: #374151;
-                  font-size: 14px;
-                  line-height: 20px;
-                  padding-bottom: 24px;
+                  color: #333333;
+                  font-size: 16px;
+                  line-height: 1.6;
+                  padding-bottom: 40px;
                   text-align: center;
                 "
               >
-                <strong>{{inviterName}}</strong> ({{inviterEmail}}) has invited you as a
-                <strong>{{role}}</strong> in the workspace <strong>{{workspaceName}}</strong>.
+                <strong>{{inviterName}}</strong> ({{inviterEmail}})<br />
+                has invited you as a <strong>{{role}}</strong><br />
+                in the workspace <strong>{{workspaceName}}</strong>
               </td>
             </tr>
 
             <!-- CTA Button -->
             <tr>
-              <td align="center" style="padding-bottom: 24px">
+              <td align="center" style="padding-bottom: 40px">
                 <a
                   href="{{inviteLink}}"
                   style="
                     display: inline-block;
-                    padding: 12px 24px;
-                    font-size: 14px;
-                    font-weight: 600;
+                    padding: 16px 40px;
+                    font-size: 16px;
+                    font-weight: 700;
                     color: #ffffff;
-                    background: #4f46e5;
-                    border-radius: 8px;
+                    background: #000000;
                     text-decoration: none;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
                   "
                 >
                   Accept Invitation
@@ -101,29 +113,15 @@
             <tr>
               <td
                 style="
-                  font-size: 12px;
-                  line-height: 18px;
-                  color: #6b7280;
+                  font-size: 14px;
+                  line-height: 1.5;
+                  color: #666666;
                   text-align: center;
-                  padding-bottom: 16px;
+                  padding-bottom: 20px;
                 "
               >
-                This invitation expires in <strong>{{expiresIn}}</strong>. If the button doesn’t
-                work, copy this link:
-              </td>
-            </tr>
-            <tr>
-              <td
-                style="
-                  word-break: break-all;
-                  font-size: 12px;
-                  line-height: 18px;
-                  color: #4f46e5;
-                  text-align: center;
-                  padding-bottom: 24px;
-                "
-              >
-                {{inviteLink}}
+                This invitation expires in <strong>{{expiresIn}}</strong><br />
+                If the button doesn't work, copy this link:
               </td>
             </tr>
 
@@ -131,18 +129,19 @@
             <tr>
               <td
                 style="
-                  font-size: 11px;
-                  color: #9ca3af;
+                  font-size: 12px;
+                  color: #999999;
                   text-align: center;
-                  padding-top: 16px;
-                  border-top: 1px solid #e5e7eb;
+                  padding-top: 30px;
+                  border-top: 1px solid #000000;
+                  line-height: 1.5;
                 "
               >
-                Sent by {{appName}} • {{companyAddress}}<br />
+                Sent by {{appName}} • {{companyAddress}}<br /><br />
                 Need help?
                 <a
                   href="{{supportUrl}}"
-                  style="color: #6b7280; text-decoration: underline"
+                  style="color: #000000; text-decoration: underline; font-weight: 600"
                   target="_blank"
                   >Contact support</a
                 >
@@ -151,9 +150,11 @@
           </table>
 
           <!-- View in browser -->
-          <p style="font-size: 12px; color: #9ca3af; margin-top: 12px; text-align: center">
-            Can’t see this email?
-            <a href="{{mirrorLink}}" target="_blank" style="color: #6b7280">View in browser</a>
+          <p style="font-size: 12px; color: #666666; margin-top: 20px; text-align: center">
+            Can't see this email?
+            <a href="{{mirrorLink}}" target="_blank" style="color: #000000; font-weight: 600"
+              >View in browser</a
+            >
           </p>
         </td>
       </tr>
