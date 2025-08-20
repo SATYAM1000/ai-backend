@@ -1,6 +1,6 @@
-import crypto from 'crypto';
 import { EInvitationStatus, InvitationModel } from '@/models';
 import mongoose from 'mongoose';
+import { generateRandomToken } from '@/utils';
 
 export const invitationServices = {
   getInvitationByEmail: async (email: string, workspaceId: string) => {
@@ -17,19 +17,15 @@ export const invitationServices = {
     role: string,
     invitedBy: mongoose.Types.ObjectId,
   ) => {
-    const token = crypto.randomBytes(32).toString('hex');
-
     const payload = {
       email,
       workspaceId,
       invitedBy,
       role,
-      token,
+      token: generateRandomToken(),
       status: EInvitationStatus.PENDING,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     };
-
-    const newInvitation = await InvitationModel.create(payload);
-    return newInvitation;
+    return await InvitationModel.create(payload);
   },
 };

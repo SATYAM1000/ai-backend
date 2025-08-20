@@ -33,9 +33,7 @@ export const workspaceControllers = {
     if (!workspaceId || !mongoose.Types.ObjectId.isValid(workspaceId)) {
       throw new HttpError('Invalid workspace ID', 400);
     }
-
     const { body } = req as { body: UpdateWorkspaceBody };
-
     const result = await workspaceServices.updateExistingWorkspace(workspaceId, ownerId, body);
     return HttpResponse(req, res, 200, 'Workspace updated successfully', result);
   }),
@@ -84,7 +82,12 @@ export const workspaceControllers = {
       throw new HttpError('Invalid workspace ID', 400);
     }
     const { email, role } = req.body as InviteMemberToWorkspaceBody;
-    const result = await workspaceServices.inviteMemberToWorkspace(workspaceId, email, role, req);
-    return HttpResponse(req, res, 200, 'Member invited successfully', result);
+    const result = await workspaceServices.inviteMemberToWorkspace(
+      workspaceId,
+      email,
+      role,
+      req.user!._id,
+    );
+    return HttpResponse(req, res, 200, 'Invitation sent successfully', result);
   }),
 };

@@ -1,34 +1,28 @@
-import path from 'path';
-import fs from 'fs';
-import { env, resend } from '@/config';
+import { env } from '@/config';
 
 export const emailServices = {
   sendWorkspaceInvitationEmail: async (
-    to: string,
+    token: string,
     workspaceName: string,
-    variables: Record<string, string>,
+    inviterName: string,
+    inviterEmail: string,
+    role: string,
+    existingInvitationId: string,
   ) => {
-    try {
-      const templatePath = path.join(
-        __dirname,
-        'src',
-        'templates',
-        'invitation-email.template.html',
-      );
-      let html = fs.readFileSync(templatePath, 'utf-8');
+    const invitationLink = `${env.FRONTEND_URL}/invites/accept/${token}`;
 
-      for (const [key, value] of Object.entries(variables)) {
-        html = html.replace(new RegExp(`{{${key}}}`, 'g'), value);
-      }
+    const templateVariables = {
+      workspaceName: workspaceName,
+      inviterName: inviterName,
+      inviterEmail: inviterEmail,
+      role,
+      inviteLink: invitationLink,
+      expiresIn: '7 days',
+      appName: 'ProtoAI',
+      nowDate: new Date().toLocaleDateString(),
+      mirrorLink: `${env.FRONTEND_URL}/invites/view/${existingInvitationId}`,
+    };
 
-      await resend.emails.send({
-        from: env.FROM_EMAIL_ADDRESS,
-        to,
-        subject: `Invitation to join ${workspaceName}`,
-        html,
-      });
-    } catch {
-      throw new Error('Failed to send invitation email');
-    }
+    return invitationLink;
   },
 };

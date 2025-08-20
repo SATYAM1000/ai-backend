@@ -2,7 +2,7 @@ import { logMessage } from '@/utils/logger.util';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { httpResponse as HttpResponse } from '@/utils/http-response.util';
 import { httpError, HttpError } from '@/utils/http-error.util';
-import { redisUtils } from '@/utils/redis.util';
+import { generateRandomToken } from '@/utils/random-token.util';
 
 export const utils = {
   logger: logMessage,
@@ -10,7 +10,7 @@ export const utils = {
   httpResponse: HttpResponse,
   httpError: httpError,
   HttpError: HttpError,
-  redis: redisUtils,
+  randomToken: generateRandomToken,
 };
 
-export { HttpError, HttpResponse, asyncHandler };
+export { HttpError, HttpResponse, asyncHandler, httpError, logMessage, generateRandomToken };

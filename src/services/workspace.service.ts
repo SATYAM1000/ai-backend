@@ -1,8 +1,8 @@
-import { Request } from 'express';
 import mongoose from 'mongoose';
-import { emailServices, invitationServices, projectServices } from '@/services';
-import { HttpError } from '@/utils';
+import { authService, emailServices, invitationServices, projectServices } from '@/services';
+import { generateRandomToken, HttpError } from '@/utils';
 import {
+  EInvitationStatus,
   EProjectStatus,
   EWorkspaceStatus,
   IBillingPlanType,
@@ -12,7 +12,6 @@ import {
   WorkspaceModel,
 } from '@/models';
 import { CreateNewWorkspaceBody, UpdateWorkspaceBody } from '@/validations';
-import { getEmailQueue } from '@/queues/email.queue';
 
 export const workspaceServices = {
   createDefaultWorkspace: async (
@@ -140,7 +139,6 @@ export const workspaceServices = {
 
     return workspace;
   },
-
   getUserWorkspaces: async (userId: mongoose.Types.ObjectId) => {
     const workspaces = await WorkspaceModel.find({
       $or: [{ ownerId: userId }, { 'members.userId': userId }],
@@ -194,72 +192,51 @@ export const workspaceServices = {
     workspaceId: string,
     email: string,
     role: string,
-    req: Request,
+    invitedBy: mongoose.Types.ObjectId,
   ) => {
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      throw new HttpError('User not found', 404);
-    }
-
     const workspace = await WorkspaceModel.findOne({
       _id: new mongoose.Types.ObjectId(workspaceId),
       status: 'active',
-      members: { $not: { $elemMatch: { userId: user._id } } },
     });
+    if (!workspace) throw new HttpError('Workspace not found', 404);
+    const existingUser = await UserModel.findOne({ email });
 
-    if (!workspace) {
-      throw new HttpError('Workspace not found or user already a member', 409);
+    if (existingUser) {
+      const isAlreadyMember = workspace.members.some(
+        (m) => m.userId.toString() === (existingUser._id as string),
+      );
+      if (isAlreadyMember) throw new HttpError('User already a member', 409);
     }
 
-    const existingInvitation = await invitationServices.getInvitationByEmail(email, workspaceId);
+    let existingInvitation = await invitationServices.getInvitationByEmail(email, workspaceId);
 
-    if (existingInvitation) {
-      throw new HttpError('Invitation already sent', 409);
+    if (
+      existingInvitation &&
+      existingInvitation.status === EInvitationStatus.PENDING &&
+      existingInvitation.expiresAt > new Date()
+    ) {
+      existingInvitation.token = generateRandomToken();
+      existingInvitation.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      await existingInvitation.save();
+    } else {
+      existingInvitation = await invitationServices.createNewInvitation(
+        email,
+        workspaceId,
+        role,
+        invitedBy,
+      );
     }
 
-    const invitation = await invitationServices.createNewInvitation(
-      email,
-      workspaceId,
-      role,
-      req.user!._id,
-    );
-
-    const inviteLink = `https://yourapp.com/invites/accept/${invitation.token}`;
-
-    const templeteVariables = {
-      workspaceName: workspace.name,
-      inviterName: req.user!.name,
-      inviterEmail: req.user!.email,
-      role,
-      inviteLink,
-      expiresIn: '7 days',
-      appName: 'ProtoAI',
-      nowDate: new Date().toLocaleDateString(),
-      companyAddress: '123 Startup Street, SF',
-      supportUrl: 'https://yourapp.com/support',
-      mirrorLink: 'https://yourapp.com/invites/view?id=123',
-    };
-
-    await getEmailQueue().add(
-      'send-workspace-invite',
-      {
-        to: email,
-        workspaceName: workspace.name,
-        templateVariables: templeteVariables,
-      },
-      {
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 60000 },
-        removeOnComplete: true,
-      },
-    );
-
-    const result = await emailServices.sendWorkspaceInvitationEmail(
-      email,
+    const inviter = await authService.getUserInfoById(invitedBy.toString());
+    const invitationLink = await emailServices.sendWorkspaceInvitationEmail(
+      existingInvitation.token,
       workspace.name,
-      templeteVariables,
+      inviter!.name,
+      inviter!.email,
+      role,
+      existingInvitation._id as string,
     );
 
-    return result;
+    return { invitationId: existingInvitation._id, invitationLink: invitationLink };
   },
 };
