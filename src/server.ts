@@ -8,12 +8,15 @@ import {
   redisClient,
 } from '@/config';
 import { utils } from '@/utils';
+import { initEmailQueue } from '@/queues';
+import { initEmailWorker } from '@/workers';
 
 (async function startServer() {
   try {
     await Promise.all([connectToMainDB(), connectToLogsDB(), initRedisClient()]);
-    utils.logger('info', '✅ All services connected (DB + Redis)');
-
+    initEmailQueue();
+    initEmailWorker();
+    utils.logger('info', '✅ All services connected (DB + Redis) successfully');
     app.listen(env.PORT, () => {
       utils.logger(
         'info',
