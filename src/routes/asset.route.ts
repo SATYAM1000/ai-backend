@@ -1,10 +1,16 @@
-import { assetControllers } from '@/controllers/assets.controller';
-import { middlewares } from '@/middlewares';
 import { Router } from 'express';
+import { assetControllers } from '@/controllers';
+import { middlewares } from '@/middlewares';
+import { assetValidationSchemas } from '@/validations';
 
 export const assetsRouter = Router();
 
-assetsRouter.post('/presign', middlewares.authHandler, assetControllers.getPresignedUrl);
+assetsRouter.post(
+  '/presign',
+  middlewares.authHandler,
+  middlewares.validationHandler(assetValidationSchemas.getPresignedUrlSchema),
+  assetControllers.getPresignedUrl,
+);
 assetsRouter.post('/', middlewares.authHandler, assetControllers.createAsset);
 
 assetsRouter.get('/:id', middlewares.authHandler, assetControllers.getAssetById);
