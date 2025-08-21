@@ -51,6 +51,7 @@
     "typescript-eslint": "^8.39.1"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.872.0",
     "bullmq": "^5.58.0",
     "colorette": "^2.0.20",
     "compression": "^1.8.1",
@@ -63,6 +64,7 @@
     "hpp": "^0.2.3",
     "ioredis": "^5.7.0",
     "mongoose": "^8.17.1",
+    "multer": "^2.0.2",
     "nanoid": "^5.1.5",
     "next-auth": "^5.0.0-beta.29",
     "resend": "^6.0.1",
