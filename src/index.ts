@@ -1,15 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { middlewares } from '@/middlewares';
-
-import { env } from '@/config';
-import { projectsRouter, userRouter, workspaceRouter } from '@/routes';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import compression from 'compression';
 import hpp from 'hpp';
+
 import { utils } from '@/utils';
+import { env } from '@/config';
+import { middlewares } from '@/middlewares';
+import { assetsRouter, projectsRouter, userRouter, workspaceRouter } from '@/routes';
 
 const app = express();
 
@@ -46,6 +46,7 @@ app.use(middlewares.requestHandler);
 app.use('/api/v1/auth', userRouter);
 app.use('/api/v1/workspaces', workspaceRouter);
 app.use('/api/v1/projects', projectsRouter);
+app.use('/api/v1/assets', assetsRouter);
 
 app.use(middlewares.notFoundHandler);
 
