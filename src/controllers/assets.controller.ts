@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 
 export const assetControllers = {
   getPresignedUrl: asyncHandler(async (req: Request, res: Response) => {
+    
     return HttpResponse(req, res, 200, 'Presigned URL fetched successfully');
   }),
   createAsset: asyncHandler(async (req: Request, res: Response) => {
