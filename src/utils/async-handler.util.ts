@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { THttpError } from '@/@types';
-import { responseMessage } from '@/constants';
-import { HttpError } from './http-error.util';
+import { HttpError } from '@/utils/http-error.util';
 
 export const asyncHandler =
   <Req = Request, Res = Response>(
@@ -12,10 +11,9 @@ export const asyncHandler =
       await fn(req, res, next);
     } catch (error) {
       const request = req as Request;
-      
-      // Check if it's our custom HttpError with a status code
+
       const statusCode = error instanceof HttpError ? error.statusCode : 500;
-      
+
       const httpError: THttpError = {
         success: false,
         statusCode,
@@ -24,7 +22,7 @@ export const asyncHandler =
           method: request.method,
           url: request.originalUrl,
         },
-        message: error instanceof Error ? error.message : responseMessage.SOMETHING_WENT_WRONG,
+        message: error instanceof Error ? error.message : 'Something went wrong',
         data: null,
         trace: error instanceof Error ? { error: error.stack } : null,
       };
