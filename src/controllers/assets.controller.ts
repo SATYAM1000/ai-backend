@@ -1,10 +1,20 @@
+import { assetServices } from '@/services';
 import { asyncHandler, HttpResponse } from '@/utils';
+import { GetPresignedUrlBody } from '@/validations';
 import { Request, Response } from 'express';
+import { v4 as uuid } from 'uuid';
 
 export const assetControllers = {
   getPresignedUrl: asyncHandler(async (req: Request, res: Response) => {
-    
-    return HttpResponse(req, res, 200, 'Presigned URL fetched successfully');
+    const { body } = req as { body: GetPresignedUrlBody };
+    const { fileName, mimeType } = body;
+    const key = `uploads/${uuid()}-${fileName}`;
+    const presignedUrl = await assetServices.getPresignedUrl(key, mimeType);
+    const resPayload = {
+      key,
+      presignedUrl,
+    };
+    return HttpResponse(req, res, 200, 'Presigned URL fetched successfully', resPayload);
   }),
   createAsset: asyncHandler(async (req: Request, res: Response) => {
     return HttpResponse(req, res, 200, 'Asset created successfully');

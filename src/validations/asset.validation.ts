@@ -9,4 +9,4 @@ export const assetValidationSchemas = {
   getPresignedUrlSchema: getPresignedUrlSchema,
 };
 
-export type TGetPresignedUrl = z.infer<typeof getPresignedUrlSchema>;
+export type GetPresignedUrlBody = z.infer<typeof getPresignedUrlSchema>;
