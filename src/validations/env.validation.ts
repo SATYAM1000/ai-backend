@@ -14,4 +14,8 @@ export const envSchema = z.object({
   REDIS_PASSWORD: z.string().min(1, 'REDIS_PASSWORD is required in env file'),
   RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required in env file'),
   FROM_EMAIL_ADDRESS: z.string().min(1, 'FROM_EMAIL_ADDRESS is required in env file'),
+  AWS_ACCESS_KEY_ID: z.string().min(1, 'AWS_ACCESS_KEY_ID is required in env file'),
+  AWS_SECRET_ACCESS_KEY: z.string().min(1, 'AWS_SECRET_ACCESS_KEY is required in env file'),
+  AWS_S3_BUCKET_NAME: z.string().min(1, 'AWS_S3_BUCKET_NAME is required in env file'),
+  AWS_S3_BUCKET_REGION: z.string().min(1, 'AWS_S3_BUCKET_REGION is required in env file'),
 });
