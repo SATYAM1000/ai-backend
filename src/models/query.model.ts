@@ -9,12 +9,12 @@ export enum IQueryStatus {
 
 export interface IQuery extends Document {
   projectId: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId; // who made the query
+  userId: mongoose.Types.ObjectId; 
   query: string;
-  response: string[]; // raw llm response for the query
+  response: string[];
   status: IQueryStatus;
-  artifacts: mongoose.Types.ObjectId[]; // ids of artifacts created by the query
-  parentQueryId?: mongoose.Types.ObjectId; // id of the parent query
+  artifacts: mongoose.Types.ObjectId[]; 
+  parentQueryId?: mongoose.Types.ObjectId;
   attachments: mongoose.Types.ObjectId[];
   artifactReferenceIds: mongoose.Types.ObjectId[];
   isDeleted: boolean;
@@ -72,7 +72,7 @@ querySchema.index({ userId: 1, projectId: 1, createdAt: -1 });
 querySchema.index({ parentQueryId: 1 });
 querySchema.index(
   { projectId: 1, isDeleted: 1, createdAt: -1 },
-  { partialFilterExpression: { isDeleted: false } }
+  { partialFilterExpression: { isDeleted: false } },
 );
 querySchema.index({ query: 'text', response: 'text' }, { weights: { query: 3, response: 1 } });
 

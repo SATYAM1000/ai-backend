@@ -1,4 +1,3 @@
-
 function createUserKey(userId: string) {
   return `user:${userId}`;
 }

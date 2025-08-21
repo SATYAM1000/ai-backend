@@ -17,9 +17,13 @@ export const initEmailWorker = () => {
             utils.logger('info', `📧 Sending workspace invite email for job ${job?.id}`);
             const { to, templateVariables, invitationId } = job.data;
             utils.logger('info', `📧 Sending workspace invite email for job ${job?.id} to ${to}`);
-            
+
             try {
-              await emailServices.sendWorkspaceInvitationEmail(to, templateVariables.workspaceName, templateVariables);
+              await emailServices.sendWorkspaceInvitationEmail(
+                to,
+                templateVariables.workspaceName,
+                templateVariables,
+              );
               // Only update status if email was sent successfully
               await invitationServices.updateEmailSentStatus(invitationId);
               utils.logger('info', `✅ Successfully sent invitation email to ${to}`);

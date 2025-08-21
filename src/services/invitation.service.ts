@@ -33,9 +33,9 @@ export const invitationServices = {
   updateEmailSentStatus: async (invitationId: string) => {
     return await InvitationModel.updateOne(
       { _id: new mongoose.Types.ObjectId(invitationId) },
-      { 
+      {
         $set: { lastSentAt: new Date() },
-        $inc: { resentCount: 1 }
+        $inc: { resentCount: 1 },
       },
     );
   },
