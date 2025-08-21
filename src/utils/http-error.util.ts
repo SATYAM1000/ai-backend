@@ -1,5 +1,4 @@
 import { THttpError } from '@/@types';
-import { responseMessage } from '@/constants';
 import { NextFunction, Request } from 'express';
 import { utils } from '.';
 import { env } from '@/config';
@@ -31,10 +30,7 @@ const errorObject = (
       method: req.method,
       url: req.originalUrl,
     },
-    message:
-      err instanceof Error
-        ? err.message || responseMessage.SOMETHING_WENT_WRONG
-        : responseMessage.SOMETHING_WENT_WRONG,
+    message: err instanceof Error ? err.message || 'Something went wrong' : 'Something went wrong',
     data: null,
     trace: err instanceof Error ? { error: err.stack } : null,
   };
