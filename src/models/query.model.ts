@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export enum IQueryStatus {
   QUEUED = 'queued',
-  PENDING = 'pending',
+  PROCESSING = 'processing',
   COMPLETED = 'completed',
   FAILED = 'failed',
 }

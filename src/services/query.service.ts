@@ -1,4 +1,4 @@
-import { QueryModel } from '@/models';
+import { IQueryStatus, QueryModel } from '@/models';
 import { CreateNewQueryBody } from '@/validations';
 import mongoose from 'mongoose';
 
@@ -8,6 +8,14 @@ export const queryServices = {
       ...payload,
       userId,
     });
+    return query;
+  },
+  getQueryById: async (queryId: string) => {
+    const query = await QueryModel.findById(queryId);
+    return query;
+  },
+  updateQueryStatus: async (queryId: string, status: IQueryStatus) => {
+    const query = await QueryModel.findByIdAndUpdate(queryId, { status }, { new: true });
     return query;
   },
 };

@@ -9,7 +9,7 @@ import {
 } from '@/config';
 import { utils } from '@/utils';
 import { initEmailQueue } from '@/queues';
-import { initEmailWorker } from '@/workers';
+import { initEmailWorker, initLLMWorker } from '@/workers';
 import { initLLMQueue } from './queues/llm-processing.queue';
 
 (async function startServer() {
@@ -18,6 +18,7 @@ import { initLLMQueue } from './queues/llm-processing.queue';
     initEmailQueue();
     initEmailWorker();
     initLLMQueue();
+    initLLMWorker();
 
     utils.logger('info', '✅ All services connected (DB + Redis) successfully');
     app.listen(env.PORT, () => {
