@@ -1,5 +1,5 @@
 import { BullMQJobsName } from '@/@types';
-import { googleGenAI, env, redisClient } from '@/config';
+import { env, llmClient, redisClient } from '@/config';
 import { IQueryStatus } from '@/models';
 import { queryServices } from '@/services';
 import { HttpError, utils } from '@/utils';
@@ -16,6 +16,7 @@ export const initLLMWorker = () => {
           try {
             if (job.name === BullMQJobsName.QUERY_PROCESSING) {
               const { queryText, queryId } = job.data;
+
               const query = await queryServices.getQueryById(queryId);
               if (!query) {
                 throw new HttpError('Query not found', 404);
@@ -27,12 +28,19 @@ export const initLLMWorker = () => {
               if (!updateQueryStatus) {
                 throw new HttpError('Failed to update query status', 404);
               }
-              const response = await googleGenAI.models.generateContentStream({
+
+              const response = await llmClient.googleGenAI.models.generateContentStream({
                 model: 'gemini-2.0-flash-001',
                 contents: queryText,
+                config: {
+                  systemInstruction: 'You are a helpful assistant.',
+                  temperature: 0.7,
+                  maxOutputTokens: 1000,
+                },
               });
               for await (const chunk of response) {
                 if (chunk.text) {
+                  console.log(chunk.text);
                   await redisClient.publish(
                     `query:${queryId}:stream`,
                     JSON.stringify({ type: 'token', text: chunk.text }),

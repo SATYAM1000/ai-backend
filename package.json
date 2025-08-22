@@ -69,6 +69,7 @@
     "multer": "^2.0.2",
     "nanoid": "^5.1.5",
     "next-auth": "^5.0.0-beta.29",
+    "openai": "^5.15.0",
     "resend": "^6.0.1",
     "sharp": "^0.34.3",
     "winston": "^3.17.0",

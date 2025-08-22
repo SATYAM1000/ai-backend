@@ -19,4 +19,5 @@ export const envSchema = z.object({
   AWS_S3_BUCKET_NAME: z.string().min(1, 'AWS_S3_BUCKET_NAME is required in env file'),
   AWS_S3_BUCKET_REGION: z.string().min(1, 'AWS_S3_BUCKET_REGION is required in env file'),
   GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required in env file'),
+  OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required in env file'),
 });
