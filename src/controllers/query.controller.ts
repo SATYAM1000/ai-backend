@@ -15,7 +15,7 @@ export const queryController = {
       throw new HttpError('Project not found', 404);
     }
 
-    const query = await queryServices.createNewQuery(body);
+    const query = await queryServices.createNewQuery(body, userId);
 
     return HttpResponse(req, res, 200, 'Query created successfully', query);
   }),

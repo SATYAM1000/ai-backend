@@ -42,7 +42,15 @@ export const projectServices = {
   createNewProject: async (payload: CreateNewProjectBody, userId: mongoose.Types.ObjectId) => {
     return await ProjectModel.create({
       ...payload,
-      createdBy: new mongoose.Types.ObjectId(userId),
+      createdBy: userId,
+      status: EProjectStatus.ACTIVE,
+      collaborators: [
+        {
+          userId: userId,
+          role: 'owner',
+          invitedAt: new Date(),
+        },
+      ],
     });
   },
   deleteProjectFromWorkspace: async (projectId: string, userId: mongoose.Types.ObjectId) => {
@@ -50,11 +58,11 @@ export const projectServices = {
       _id: new mongoose.Types.ObjectId(projectId),
       status: EProjectStatus.ACTIVE,
       $or: [
-        { createdBy: new mongoose.Types.ObjectId(userId) },
+        { createdBy: userId },
         {
           collaborators: {
             $elemMatch: {
-              userId: new mongoose.Types.ObjectId(userId),
+              userId: userId,
               role: { $in: ['owner', 'admin'] },
             },
           },
