@@ -1,8 +1,22 @@
-import { utils } from '@/utils';
+import { Request, Response } from 'express';
+import { HttpError, asyncHandler, HttpResponse } from '@/utils';
+import { CreateNewQueryBody } from '@/validations';
+import { projectServices, queryServices } from '@/services';
 
 export const queryController = {
-  createNewQuery: utils.asyncHandler(async (req: Request, res: Response) => {
-    // const { body } = req as { body: CreateNewQueryBody };
-    // const result = await queryServices.createNewQuery(body);
+  createNewQuery: asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!._id;
+    const { body } = req as { body: CreateNewQueryBody };
+
+    const { projectId } = body;
+
+    const project = await projectServices.getProjectById(userId, projectId);
+    if (!project) {
+      throw new HttpError('Project not found', 404);
+    }
+
+    const query = await queryServices.createNewQuery(body);
+
+    return HttpResponse(req, res, 200, 'Query created successfully', query);
   }),
 };

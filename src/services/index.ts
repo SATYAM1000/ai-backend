@@ -4,3 +4,4 @@ export * from '@/services/project.service';
 export * from '@/services/invitation.service';
 export * from '@/services/email.service';
 export * from '@/services/assets.service';
+export * from '@/services/query.service';

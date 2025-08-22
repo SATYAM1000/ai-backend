@@ -9,11 +9,11 @@ export enum IQueryStatus {
 
 export interface IQuery extends Document {
   projectId: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId; 
-  query: string;
+  userId: mongoose.Types.ObjectId;
+  prompt: string;
   response: string[];
   status: IQueryStatus;
-  artifacts: mongoose.Types.ObjectId[]; 
+  artifacts: mongoose.Types.ObjectId[];
   parentQueryId?: mongoose.Types.ObjectId;
   attachments: mongoose.Types.ObjectId[];
   artifactReferenceIds: mongoose.Types.ObjectId[];
@@ -35,7 +35,7 @@ const querySchema = new mongoose.Schema<IQuery>(
       ref: 'User',
       required: true,
     },
-    query: {
+    prompt: {
       type: String,
       required: true,
     },
