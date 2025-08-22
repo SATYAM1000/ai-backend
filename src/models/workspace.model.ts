@@ -6,6 +6,7 @@ export enum IWorkspaceMemberRole {
   EDITOR = 'editor',
   VIEWER = 'viewer',
   GUEST = 'guest',
+  PROJECT_ONLY = 'project_only',
 }
 
 export enum IBillingPlanType {
@@ -23,6 +24,7 @@ export interface IWorkspaceMember {
   userId: mongoose.Types.ObjectId;
   role: IWorkspaceMemberRole;
   joinedAt: Date;
+  membershipExpiresAt?: Date;
 }
 
 export enum EWorkspaceStatus {

@@ -1,3 +1,4 @@
+import http from 'http';
 import app from '@/index';
 import {
   connectToLogsDB,
@@ -8,9 +9,9 @@ import {
   redisClient,
 } from '@/config';
 import { utils } from '@/utils';
-import { initEmailQueue } from '@/queues';
+import { initEmailQueue, initLLMQueue } from '@/queues';
 import { initEmailWorker, initLLMWorker } from '@/workers';
-import { initLLMQueue } from './queues/llm-processing.queue';
+import { initSocketIO } from '@/socket';
 
 (async function startServer() {
   try {
@@ -20,14 +21,11 @@ import { initLLMQueue } from './queues/llm-processing.queue';
     initLLMQueue();
     initLLMWorker();
 
-    utils.logger('info', '✅ All services connected (DB + Redis) successfully');
-    app.listen(env.PORT, () => {
-      utils.logger(
-        'info',
-        env.NODE_ENV === 'development'
-          ? `🚀 Server running on http://localhost:${env.PORT}`
-          : `🚀 Server is up and running`,
-      );
+    const rawHttpServer = http.createServer(app);
+    initSocketIO(rawHttpServer);
+
+    rawHttpServer.listen(env.PORT, () => {
+      utils.logger('info', `🚀 Server is up and running in ${env.NODE_ENV} mode`);
     });
 
     process.on('SIGINT', async () => {

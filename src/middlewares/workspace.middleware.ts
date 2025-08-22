@@ -42,6 +42,7 @@ export const WorkspaceRolePermissions: Record<IWorkspaceMemberRole, EWorkspacePe
   editor: editorPerms,
   viewer: viewerPerms,
   guest: guestPerms,
+  project_only: [],
 };
 
 export const workspacePermissionHandler = (
