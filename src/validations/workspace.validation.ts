@@ -2,7 +2,10 @@ import { z } from 'zod';
 
 const createWorkspaceSchema = z
   .object({
-    name: z.string().min(3, { message: 'Name must be at least 3 characters' }),
+    name: z
+      .string()
+      .min(3, { message: 'Name must be at least 3 characters' })
+      .max(255, { message: 'Name is too long' }),
     description: z
       .string()
       .optional()
@@ -15,7 +18,11 @@ const createWorkspaceSchema = z
 
 const updateWorkspaceSchema = z
   .object({
-    name: z.string().min(3, { message: 'Name must be at least 3 characters' }).optional(),
+    name: z
+      .string()
+      .min(3, { message: 'Name must be at least 3 characters' })
+      .max(255, { message: 'Name is too long' })
+      .optional(),
     description: z
       .string()
       .optional()
