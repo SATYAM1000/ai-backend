@@ -1,5 +1,5 @@
 import { BullMQJobsName } from '@/@types';
-import { googleGenAI, env } from '@/config';
+import { googleGenAI, env, redisClient } from '@/config';
 import { IQueryStatus } from '@/models';
 import { queryServices } from '@/services';
 import { HttpError, utils } from '@/utils';
@@ -11,7 +11,7 @@ export const initLLMWorker = () => {
   try {
     if (!llmProcessingWorker) {
       llmProcessingWorker = new Worker(
-        BullMQJobsName.QUERY_PROCESSING, 
+        BullMQJobsName.QUERY_PROCESSING,
         async (job) => {
           try {
             if (job.name === BullMQJobsName.QUERY_PROCESSING) {
@@ -32,8 +32,18 @@ export const initLLMWorker = () => {
                 contents: queryText,
               });
               for await (const chunk of response) {
-                console.log(chunk.text);
+                if (chunk.text) {
+                  await redisClient.publish(
+                    `query:${queryId}:stream`,
+                    JSON.stringify({ type: 'token', text: chunk.text }),
+                  );
+                }
               }
+
+              await redisClient.publish(
+                `query:${queryId}:stream`,
+                JSON.stringify({ type: 'done' }),
+              );
             }
           } catch (error) {
             utils.logger('error', 'LLM Worker job failed', { error, jobId: job.id });
@@ -47,7 +57,7 @@ export const initLLMWorker = () => {
             username: env.REDIS_USERNAME,
             password: env.REDIS_PASSWORD,
           },
-        }
+        },
       );
 
       llmProcessingWorker.on('completed', (job) => {
@@ -65,8 +75,8 @@ export const initLLMWorker = () => {
       utils.logger('info', '✅ LLM Worker initialized successfully');
     }
   } catch (error) {
-    utils.logger('error', '❌ Failed to initialize LLM Worker', { 
-      error: error instanceof Error ? error.message : error 
+    utils.logger('error', '❌ Failed to initialize LLM Worker', {
+      error: error instanceof Error ? error.message : error,
     });
     throw error;
   }

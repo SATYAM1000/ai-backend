@@ -11,3 +11,5 @@ queryRouter.post(
   middlewares.validationHandler(queryValidationSchemas.createNewQuerySchema),
   queryController.createNewQuery,
 );
+
+queryRouter.get('/:id/stream', middlewares.authHandler, queryController.streamQuery);
