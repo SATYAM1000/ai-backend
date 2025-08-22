@@ -6,10 +6,11 @@ import { v4 as uuid } from 'uuid';
 
 export const assetControllers = {
   getPresignedUrl: asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!._id;
     const { body } = req as { body: GetPresignedUrlBody };
     const { fileName, mimeType } = body;
-    const key = `uploads/${uuid()}-${fileName}`;
-    const presignedUrl = await assetServices.getPresignedUrl(key, mimeType);
+    const key = `assets/${userId}/${uuid()}-${fileName}`;
+    const presignedUrl = await assetServices.getPresignedUrl(key, mimeType, userId, fileName);
     const resPayload = {
       key,
       presignedUrl,
