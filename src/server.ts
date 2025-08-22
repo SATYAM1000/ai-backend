@@ -10,12 +10,15 @@ import {
 import { utils } from '@/utils';
 import { initEmailQueue } from '@/queues';
 import { initEmailWorker } from '@/workers';
+import { initLLMQueue } from './queues/llm-processing.queue';
 
 (async function startServer() {
   try {
     await Promise.all([connectToMainDB(), connectToLogsDB(), initRedisClient()]);
     initEmailQueue();
     initEmailWorker();
+    initLLMQueue();
+
     utils.logger('info', '✅ All services connected (DB + Redis) successfully');
     app.listen(env.PORT, () => {
       utils.logger(
