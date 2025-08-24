@@ -68,7 +68,7 @@ export const initLLMWorker = () => {
               }
 
               await queryServices.updateQuery(queryId, {
-                response: [parsed],
+                response: [JSON.stringify(parsed)],
                 status: IQueryStatus.COMPLETED,
               });
             }
