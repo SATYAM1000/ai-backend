@@ -60,8 +60,47 @@ export const initLLMWorker = () => {
 
               let parsed;
               try {
+                // parsed = JSON5.parse(finalText);
+
                 parsed = JSON.parse(finalText.replace('```json', '').replace('```', ''));
-                console.log('parsed', parsed);
+                if (parsed.label !== 'WORK') {
+                  await queryServices.updateQuery(queryId, {
+                    response: [parsed.reply],
+                    status: IQueryStatus.COMPLETED,
+                  });
+                } else {
+                  const codeGenResponse = await llmClient.googleGenAI.models.generateContentStream({
+                    model: 'gemini-2.0-flash-001',
+                    contents: queryText,
+                    config: {
+                      systemInstruction: JSON.stringify(systemPrompt.CODE_GENERATOR),
+                      temperature: 0.7,
+                      maxOutputTokens: 1000,
+                    },
+                  });
+
+                  let codeText = '';
+                  for await (const chunk of codeGenResponse) {
+                    if (chunk.text) {
+                      codeText += chunk.text;
+                      await redisClient.publish(
+                        `query:${queryId}:stream`,
+                        JSON.stringify({ type: 'token', text: chunk.text }),
+                      );
+                    }
+                  }
+                  await queryServices.updateQuery(queryId, {
+                    response: [codeText],
+                    status: IQueryStatus.COMPLETED,
+                  });
+
+                  await redisClient.publish(
+                    `query:${queryId}:stream`,
+                    JSON.stringify({ type: 'done' }),
+                  );
+
+                  console.log('code response', codeText);
+                }
               } catch {
                 utils.logger('warn', 'LLM response was not valid JSON, saving raw text');
                 parsed = { raw: finalText };
