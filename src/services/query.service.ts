@@ -1,4 +1,4 @@
-import { IQueryStatus, QueryModel } from '@/models';
+import { IQuery, IQueryStatus, QueryModel } from '@/models';
 import { CreateNewQueryBody } from '@/validations';
 import mongoose from 'mongoose';
 
@@ -17,5 +17,16 @@ export const queryServices = {
   updateQueryStatus: async (queryId: string, status: IQueryStatus) => {
     const query = await QueryModel.findByIdAndUpdate(queryId, { status }, { new: true });
     return query;
+  },
+  updateQuery: async (queryId: string, updates: Partial<IQuery>): Promise<IQuery | null> => {
+    const updatedQuery = await QueryModel.findByIdAndUpdate(
+      queryId,
+      { $set: updates },
+      { new: true },
+    )
+      .lean<IQuery>()
+      .exec();
+
+    return updatedQuery;
   },
 };

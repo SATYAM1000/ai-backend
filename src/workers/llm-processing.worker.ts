@@ -1,6 +1,7 @@
 import { BullMQJobsName } from '@/@types';
 import { env, llmClient, redisClient } from '@/config';
 import { IQueryStatus } from '@/models';
+import { systemPrompt } from '@/prompts';
 import { queryServices } from '@/services';
 import { HttpError, utils } from '@/utils';
 import { Worker } from 'bullmq';
@@ -21,26 +22,30 @@ export const initLLMWorker = () => {
               if (!query) {
                 throw new HttpError('Query not found', 404);
               }
-              const updateQueryStatus = await queryServices.updateQueryStatus(
+
+              const updated = await queryServices.updateQueryStatus(
                 queryId,
                 IQueryStatus.PROCESSING,
               );
-              if (!updateQueryStatus) {
+
+              if (!updated) {
                 throw new HttpError('Failed to update query status', 404);
               }
 
+              let finalText = '';
               const response = await llmClient.googleGenAI.models.generateContentStream({
                 model: 'gemini-2.0-flash-001',
                 contents: queryText,
                 config: {
-                  systemInstruction: 'You are a helpful assistant.',
+                  systemInstruction: JSON.stringify(systemPrompt.DESIGN_INTENT_EXTRACTOR),
                   temperature: 0.7,
                   maxOutputTokens: 1000,
                 },
               });
+
               for await (const chunk of response) {
                 if (chunk.text) {
-                  console.log(chunk.text);
+                  finalText += chunk.text;
                   await redisClient.publish(
                     `query:${queryId}:stream`,
                     JSON.stringify({ type: 'token', text: chunk.text }),
@@ -52,8 +57,25 @@ export const initLLMWorker = () => {
                 `query:${queryId}:stream`,
                 JSON.stringify({ type: 'done' }),
               );
+
+              let parsed;
+              try {
+                parsed = JSON.parse(finalText.replace('```json', '').replace('```', ''));
+                console.log('parsed', parsed);
+              } catch {
+                utils.logger('warn', 'LLM response was not valid JSON, saving raw text');
+                parsed = { raw: finalText };
+              }
+
+              await queryServices.updateQuery(queryId, {
+                response: [parsed],
+                status: IQueryStatus.COMPLETED,
+              });
             }
           } catch (error) {
+            if (job.data?.queryId) {
+              await queryServices.updateQueryStatus(job.data.queryId, IQueryStatus.FAILED);
+            }
             utils.logger('error', 'LLM Worker job failed', { error, jobId: job.id });
             throw error;
           }
