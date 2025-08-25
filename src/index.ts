@@ -8,8 +8,13 @@ import hpp from 'hpp';
 
 import { utils } from '@/utils';
 import { env } from '@/config';
-import { middlewares } from '@/middlewares';
 import { registerRoutes } from '@/routes';
+
+import {
+  globalErrorMiddleware,
+  requestLoggerMiddleware,
+  routeNotFoundMiddleware,
+} from '@/middlewares';
 
 const app = express();
 
@@ -41,12 +46,12 @@ app.use(
   }),
 );
 
-app.use(middlewares.requestHandler);
+app.use(requestLoggerMiddleware);
 
 registerRoutes(app);
 
-app.use(middlewares.notFoundHandler);
+app.use(routeNotFoundMiddleware);
 
-app.use(middlewares.errorHandler);
+app.use(globalErrorMiddleware);
 
 export default app;

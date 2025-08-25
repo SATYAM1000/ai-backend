@@ -13,3 +13,12 @@ export const middlewares = {
   validationHandler: validateMiddleware,
   workspacePermissionHandler: workspacePermissionHandler,
 };
+
+export {
+  requestLoggerMiddleware,
+  globalErrorMiddleware,
+  authMiddleware,
+  routeNotFoundMiddleware,
+  validateMiddleware,
+  workspacePermissionHandler,
+};
