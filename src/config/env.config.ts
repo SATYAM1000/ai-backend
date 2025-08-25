@@ -1,3 +1,4 @@
+import { utils } from '@/utils';
 import { validationSchema } from '@/validations';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -10,6 +11,7 @@ dotenv.config({ path: envPath });
 const _env = validationSchema.env.safeParse(process.env);
 
 if (!_env.success) {
+  utils.logger('error', `❌ Invalid environment variables: ${_env.error.message}`);
   process.exit(1);
 }
 
