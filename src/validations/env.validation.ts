@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'staging', 'production']).default('development'),
-  PORT: z.string(),
+  PORT: z.string().min(1, 'PORT is required in env file'),
+  API_PREFIX: z.string().min(1, 'API_PREFIX is required in env file'),
   MONGO_URI_MAIN: z.string().min(1, 'MONGO_URI_MAIN is required in env file'),
   MONGO_URI_LOGS: z.string().min(1, 'MONGO_URI_LOGS is required in env file'),
   NEXTAUTH_SECRET: z.string().min(1, 'NEXTAUTH_SECRET is required in env file'),

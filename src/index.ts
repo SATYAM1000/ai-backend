@@ -9,7 +9,7 @@ import hpp from 'hpp';
 import { utils } from '@/utils';
 import { env } from '@/config';
 import { middlewares } from '@/middlewares';
-import { assetsRouter, projectsRouter, queryRouter, userRouter, workspaceRouter } from '@/routes';
+import { registerRoutes } from '@/routes';
 
 const app = express();
 
@@ -43,11 +43,7 @@ app.use(
 
 app.use(middlewares.requestHandler);
 
-app.use('/api/v1/auth', userRouter);
-app.use('/api/v1/workspaces', workspaceRouter);
-app.use('/api/v1/projects', projectsRouter);
-app.use('/api/v1/query', queryRouter);
-app.use('/api/v1/assets', assetsRouter);
+registerRoutes(app);
 
 app.use(middlewares.notFoundHandler);
 
