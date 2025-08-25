@@ -5,3 +5,4 @@ export * from './redis.config';
 export * from './resend.config';
 export * from './s3.config';
 export * from './llm.config';
+export * from './rate-limiter.config';
