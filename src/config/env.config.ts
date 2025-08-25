@@ -11,7 +11,7 @@ dotenv.config({ path: envPath });
 const _env = validationSchema.env.safeParse(process.env);
 
 if (!_env.success) {
-  utils.logger('error', `❌ Invalid environment variables: ${_env.error.message}`);
+  utils.logger('error', '🚨 Invalid environment variables, check your .env file');
   process.exit(1);
 }
 
