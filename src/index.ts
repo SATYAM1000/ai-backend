@@ -12,6 +12,7 @@ import {
   globalErrorMiddleware,
   requestLoggerMiddleware,
   routeNotFoundMiddleware,
+  validateJsonMiddleware,
 } from '@/middlewares';
 
 const app = express();
@@ -25,6 +26,8 @@ app.use(compression());
 app.use(rateLimiter);
 
 app.use(express.urlencoded({ extended: true }));
+
+app.use(validateJsonMiddleware);
 
 app.use(
   cors({
