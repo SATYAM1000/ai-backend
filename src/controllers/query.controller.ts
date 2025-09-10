@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { HttpError, asyncHandler, HttpResponse } from '@/utils';
 import { CreateNewQueryBody } from '@/validations';
 import { projectServices, queryServices } from '@/services';
@@ -60,5 +60,45 @@ export const queryController = {
       await subscriber.quit();
       res.end();
     });
+  }),
+
+  deleteQuery: asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      throw new HttpError('Invalid query id provided ', 400);
+    }
+
+    const query = await queryServices.getQueryById(id);
+    if (!query) {
+      throw new HttpError('Query not found', 404);
+    }
+
+    const deleteResponse = await queryServices.deleteQuery(id);
+    if (!deleteResponse) {
+      throw new HttpError('Failed to delete the query', 400);
+    }
+
+    return HttpResponse(req, res, 200, 'Query deleted successfully', deleteResponse);
+  }),
+  editQueryText: asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      throw new HttpError('Invalid query id', 400);
+    }
+    const query = await queryServices.getQueryById(id);
+    if (!query) {
+      throw new HttpError('Query not found', 404);
+    }
+
+    const newPrompt = req.body;
+
+    const updatedQuery = await queryServices.updateQuery(id, {
+      prompt: newPrompt,
+    });
+    if (!updatedQuery) {
+      throw new HttpError('Failed to update query', 400);
+    }
+
+    return HttpResponse(req, res, 200, 'Query upated successfully', updatedQuery);
   }),
 };

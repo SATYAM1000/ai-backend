@@ -1,7 +1,8 @@
 import { assetServices } from '@/services';
-import { asyncHandler, HttpResponse } from '@/utils';
+import { asyncHandler, HttpError, HttpResponse } from '@/utils';
 import { GetPresignedUrlBody } from '@/validations';
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { v4 as uuid } from 'uuid';
 
 export const assetControllers = {
@@ -17,21 +18,35 @@ export const assetControllers = {
     };
     return HttpResponse(req, res, 200, 'Presigned URL fetched successfully', resPayload);
   }),
+
   createAsset: asyncHandler(async (req: Request, res: Response) => {
     return HttpResponse(req, res, 200, 'Asset created successfully');
   }),
+
   getAssetById: asyncHandler(async (req: Request, res: Response) => {
+    const assetId = req.params.id;
+    if (!assetId || mongoose.Types.ObjectId.isValid(assetId)) {
+      throw new HttpError('Asset id is required', 400);
+    }
     return HttpResponse(req, res, 200, 'Asset fetched successfully');
   }),
+
   getAllProjectAssets: asyncHandler(async (req: Request, res: Response) => {
+    const projectId = req.params.projectId;
+    if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
+      throw new HttpError('Invalid project id', 400);
+    }
     return HttpResponse(req, res, 200, 'Assets fetched successfully');
   }),
-  getAllWorkspaceAssets: asyncHandler(async (req: Request, res: Response) => {
+
+  sssssshetAllWorkspaceAssets: asyncHandler(async (req: Request, res: Response) => {
     return HttpResponse(req, res, 200, 'Assets fetched successfully');
   }),
+
   updateAsset: asyncHandler(async (req: Request, res: Response) => {
     return HttpResponse(req, res, 200, 'Asset updated successfully');
   }),
+
   deleteAsset: asyncHandler(async (req: Request, res: Response) => {
     return HttpResponse(req, res, 200, 'Asset deleted successfully');
   }),

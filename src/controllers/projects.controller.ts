@@ -43,4 +43,5 @@ export const ProjectsController = {
     const result = await projectServices.deleteProjectFromWorkspace(projectId, userId);
     return HttpResponse(req, res, 200, 'Project deleted successfully', result);
   }),
+
 };

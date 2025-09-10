@@ -1,4 +1,4 @@
-import { HttpError, utils } from '@/utils';
+import { utils } from '@/utils';
 import { Request, Response, NextFunction } from 'express';
 
 export const validateJsonMiddleware = (

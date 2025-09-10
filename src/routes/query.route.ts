@@ -13,3 +13,10 @@ queryRouter.post(
 );
 
 queryRouter.get('/:id/stream', middlewares.authHandler, queryController.streamQuery);
+
+queryRouter.delete('/:id', middlewares.authHandler, queryController.deleteQuery);
+
+queryRouter.patch('/:id', middlewares.authHandler, queryController.deleteQuery);
+
+
+

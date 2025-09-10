@@ -29,4 +29,8 @@ export const queryServices = {
 
     return updatedQuery;
   },
+  deleteQuery: async (queryId: string) => {
+    const deletedQuery = await QueryModel.findByIdAndDelete(queryId);
+    return deletedQuery;
+  },
 };
